@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dongnao.dao.OrderMapper" >
+	
+	<!--<resultMap id="RECORDResultMap" type="com.consult.bean.ConsultRecord" >
+			<id column="ID" property="id"/>
+			<result column="PSPTID" property="psptId" jdbcType="VARCHAR" />
+			<result column="NAME" property="name" jdbcType="VARCHAR" />
+			<result column="ACTIVETIME" property="activeTime" jdbcType="VARCHAR" />
+			<result column="AUTOGRAPH" property="autograph" jdbcType="VARCHAR" />
+			<result column="ISPASS" property="ispass" jdbcType="VARCHAR" />
+			<result column="DOCAUTOGRAPH" property="docautograph" jdbcType="VARCHAR" />
+			<result column="FINGERPRINT" property="fingerprint" jdbcType="VARCHAR" />
+			<result column="PRINT_FLAG" property="printFlag" jdbcType="VARCHAR" />
+			<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		</resultMap>-->
+	
+	
+	<insert id="saveOrder" parameterType="com.dongnao.bean.AccountOrderDetail">
+  	
+	insert into account_order_detail(create_date,store_id,store_ELM_id,store_name,order_type,order_time,order_no,prices,meal_fee,merchant_activities_subsidies,platform_activities_subsidies,service_rate,service_charge,
+	platform_dist_charge,settlement_amount,distribution_mode,remark,platform_type,
+	<if test="bookedTime != null and bookedTime != ''">
+	booked_time,
+	</if>
+	consignee_name,active_time,active_total,goods_name,goods_quality,goods_id,goods_price)
+		values (str_to_date(#{createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),#{storeId,jdbcType=VARCHAR}
+		,#{storeELMId,jdbcType=VARCHAR},#{storeName,jdbcType=VARCHAR},#{orderType,jdbcType=VARCHAR},str_to_date(#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d %T'),#{orderNo,jdbcType=VARCHAR},#{prices},#{mealFee},#{merchantActivitiesSubsidies},#{platformActivitiesSubsidies},#{serviceRate},#{serviceCharge}
+		,#{platformDistCharge},#{settlementAmount},#{distributionMode},#{remark},#{platformType},
+		<if test="bookedTime != null and bookedTime != ''">
+		#{bookedTime},
+		</if>
+		#{consigneeName},#{activeTime},#{activeTotal},#{goodsName},#{goodsQuality},#{goodsId},#{goodsPrice})
+	</insert>
+	
+</mapper>

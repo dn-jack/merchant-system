@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="220px" height="220px" viewBox="0 0 220 220" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41 (35326) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <ellipse id="path-1" cx="60" cy="60" rx="48" ry="48"></ellipse>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-12" y="-12" width="120" height="120">
+            <rect x="0" y="0" width="120" height="120" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Order-Copy-2" transform="translate(-650.000000, -259.000000)">
+            <g id="Group-2" transform="translate(650.000000, 259.000000)">
+                <rect id="Rectangle-26" fill="#000000" opacity="0.1" x="0" y="0" width="220" height="220" rx="20"></rect>
+                <g id="Group-13-Copy" transform="translate(50.000000, 30.000000)">
+                    <polygon id="Path-4" fill="#F47115" points="44.3816135 28 85.4810696 28 85.4810696 38.1848007 55.0417615 38.1848007 55.0417615 47.8512044 85.0180041 47.8512044 92.8082251 55.6414255 42.0925486 106.357102 32.1101928 100.449613 52.2627773 80.2970287 45.2023631 73.2366145 52.7088401 65.7301375 59.3860609 72.4073582 73.1534277 58.6399914 53.5857948 58.6399914 35.681965 76.5438212 28 68.8618563 43.9504539 52.9114024"></polygon>
+                    <path d="M60,120 C93.137085,120 120,93.137085 120,60 C120,26.862915 93.137085,0 60,0 C26.862915,0 0,26.862915 0,60 C0,93.137085 26.862915,120 60,120 Z M60,108 C86.509668,108 108,86.509668 108,60 C108,33.490332 86.509668,12 60,12 C33.490332,12 12,33.490332 12,60 C12,86.509668 33.490332,108 60,108 Z" id="Combined-Shape" fill="#FFFFFF" opacity="0.899999976"></path>
+                    <g>
+                        <animateTransform attributeName="transform" begin="0s" dur="0.7s" type="rotate" from="0 60 60" to="360 60 60" repeatCount="indefinite" keyTimes="0; .5; 1" calcMode="spline"  keySplines=".5 0 .5 1; 0 0 1 1"/>
+                        <use id="Oval-6" stroke="#F47115" mask="url(#mask-2)" stroke-width="24" stroke-dasharray="44,301.6000061035156" transform="translate(60.000000, 60.000000) rotate(-105.000000) translate(-60.000000, -60.000000) " xlink:href="#path-1"></use>
+                    </g>
+                </g>
+                <text id="正在加载…-copy" font-family="Microsoft Yahei" font-size="18" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="70" y="185">正在加载 …</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+"orderTime" : "2017-01-09 15:67",
+"orderNo" : "23987539485394539859",
+"userName" : "李志刚",
+"sex" : "0",
+"phone" : "183-7884-9878",
+"dishes" : [{
+	"dishName" : "乳酪大会披萨",
+	"activityName" : "特价",
+	"count" : "12",
+	"price1" : "45",
+	"price2" : "43"
+}],
+"boxPrice" : "5.00",
+"distributionPrice" : "5.00",
+"discount" : "5.00",
+"hongbao" : "5.00",
+"orderPrice" : "190.00"
+}

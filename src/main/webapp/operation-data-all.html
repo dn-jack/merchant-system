@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="renderer" content="webkit">
+		<meta name="Keywords" content=""/>
+		<meta name="Description" content=""/>
+		<link rel="Shortcut Icon" href="images/icon.jpg" type="image/x-icon" />
+        <meta name="viewport" content="">
+        <link rel="stylesheet" href="./style/bootstrap.min.css">
+        <link rel="stylesheet" href="./style/font-awesome.css">
+        <link rel="stylesheet" href="./style/index.min.css">
+    </head>
+    <body>
+        <header>
+            <div class="row">
+                <div class="col-md-8">
+                    <a href="">
+                        <img src="images/logo.png" alt="">
+                        <span>运营中心</span>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <div class="user-info">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            james <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">退出</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="搜索订单">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">搜索</button>
+                          </span>
+                        </div><!-- /input-group -->
+
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="wrapper">
+            <div class="menu" id="menu">
+                <ul class="sidenav-menu">
+        	      <li class="index">
+        	        <a href="javascript:;"><i class="iconfont">&#xe60f;</i>首页</a>
+        	      </li>
+        	      <li>
+        	        <a href="javascript:;" data-sidenav-dropdown-toggle>
+        	          <span class=""><i class="iconfont">&#xe6d5;</i>数据分析</span>
+                      <i class="iconfont drop data-sidenav-dropdown-icon" data-sidenav-dropdown-icon>&#xe72a;</i>
+                      <i class="iconfont drop data-sidenav-dropdown-icon show" data-sidenav-dropdown-icon>&#xe605;</i>
+        	        </a>
+                    <ul class="sidenav-dropdown" data-sidenav-dropdown>
+                        <li><a href="javascript:;">数据总览</a></li>
+        	          <li><a href="javascript:;">活动数据分析</a></li>
+                      <li><a href="javascript:;">竞价分析</a></li>
+        	          <li><a href="javascript:;">精准客户需求分析</a></li>
+        	        </ul>
+        	      </li>
+        	      <li>
+        	        <a href="javascript:;">
+        	          <span class=""><i class="iconfont">&#xe601;</i>帮助</span>
+        	        </a>
+        	      </li>
+        	    </ul>
+            </div>
+            <div class="left-full operation">
+                <div class="operation-data-title">
+                    <div class="container">
+                        <h4>数据总览<span>(1月13日 星期二)</span></h4>
+                        <nav>
+                            <a href="#" class="index">今天</a>
+                            <a href="#">昨天</a>
+                            <a href="#">近7天</a>
+                            <a href="#">近30天</a>
+                            <a href="#">近90天</a>
+                        </nav>
+                    </div>
+                </div>
+                <div class="opration-data-content">
+                    <div class="container">
+                        <div class="scroll-box">
+                            <div class="scroll-operation">
+                                <h6>营业额趋势</h6>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel">
+                                            <div class=""  id="main"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6>三大平台营业总额</h6>
+                                <div class="row three-platform">
+                                    <div class="col-md-4">
+                                        <div class="panel text-center">
+                                            <span>美团外卖</span>
+                                            <h1><span>￥</span>58548.00</h1>
+                                            <p>昨日 ￥8584.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="panel text-center">
+                                            <span>饿了么外卖</span>
+                                            <h1><span>￥</span>58548.00</h1>
+                                            <p>昨日 ￥8584.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="panel text-center">
+                                            <span>百度外卖</span>
+                                            <h1><span>￥</span>58548.00</h1>
+                                            <p>昨日 ￥8584.00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js" charset="utf-8"></script>
+        <script src="javascript/echarts.js" charset="utf-8"></script>
+        <script src="javascript/js.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            $("#menu").sidenav();
+
+             var myChart = echarts.init(document.getElementById('main'));
+             option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    bottom: '3%',
+                     icon: 'pin',
+                    data:['总营业额','美团营业额','饿了么营业额','百度外卖']
+                },
+                grid: {
+                    top: '8%',
+                    left: '5%',
+                    right: '5%',
+                    bottom: '12%',
+                    containLabel: true
+                },
+                toolbox: {
+                    right: '3%',
+                    feature: {
+                        //saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['周一','周二','周三','周四','周五','周六','周日']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                color: [ '#F47115', '#42E452', '#359BF5', '#FF4747'],
+                series: [
+                    {
+                        name:'总营业额',
+                        type:'line',
+                        stack: '总量',
+                        data:[120, 132, 101, 134, 90, 230, 210]
+                    },
+                    {
+                        name:'美团营业额',
+                        type:'line',
+                        stack: '总量',
+                        data:[220, 182, 191, 234, 290, 330, 310]
+                    },
+                    {
+                        name:'饿了么营业额',
+                        type:'line',
+                        stack: '总量',
+                        data:[150, 232, 201, 154, 190, 330, 410]
+                    },
+                    {
+                        name:'百度外卖',
+                        type:'line',
+                        stack: '总量',
+                        data:[320, 332, 301, 334, 390, 330, 320]
+                    }
+
+                ]
+            };
+            myChart.setOption(option);
+        </script>
+    </body>
+</html>

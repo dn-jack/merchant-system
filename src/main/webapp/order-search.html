@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="renderer" content="webkit">
+		<meta name="Keywords" content=""/>
+		<meta name="Description" content=""/>
+        <meta name="viewport" content="width=device-width">
+        <link href="assets/plug/icheck-1.x/skins/square/red.css" rel="stylesheet">
+        <link rel="stylesheet" href="assets/plug/bootstrap-3.3.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/style/index.min.css">
+    </head>
+    <body>
+        <header>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="">
+                        <img src="images/logo.png" alt="">
+                        <span>商家中心</span>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <div class="user-info">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            james <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">退出</a></li>
+                          </ul>
+                        </div>
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="搜索订单">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">搜索</button>
+                          </span>
+                        </div><!-- /input-group -->
+
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="wrapper">
+            <div class="menu" id="menu">
+                <ul class="sidenav-menu">
+        	      <li class="index">
+        	        <a href="javascript:;" data-href="index.html"><i class="iconfont">&#xe60f;</i>首页</a>
+        	      </li>
+        	      <li>
+        	        <a href="javascript:;">
+        	          <span class=""><i class="iconfont">&#xe66f;</i>订单</span>
+                      <i class="iconfont drop data-sidenav-dropdown-icon" data-sidenav-dropdown-icon>&#xe72a;</i>
+                      <i class="iconfont drop data-sidenav-dropdown-icon show" data-sidenav-dropdown-icon>&#xe605;</i>
+        	        </a>
+                    <ul class="sidenav-dropdown">
+        	          <li><a href="javascript:;" data-href="order1.html">订单处理</a></li>
+        	          <li><a href="javascript:;" data-href="order-search.html">订单查询</a></li>
+        	        </ul>
+        	      </li>
+        	      <li>
+        	        <a href="javascript:;" data-href="help.html">
+        	          <span class=""><i class="iconfont">&#xe601;</i>帮助</span>
+        	        </a>
+        	      </li>
+        	    </ul>
+            </div>
+            <div class="left-full order-page order-search-page">
+
+                <div class="container-fluid content">
+                    <div class="order-search-list">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="scroll-order">
+                                    <div class="filter">
+                                            <table>
+                                                <tr>
+                                                    <td>订单类型</td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck" checked id="radio-1">
+                                                        <label for="radio-1">全部</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck" id="radio-2">
+                                                        <label for="radio-2">预定单</label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>日期</td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck1" checked id="radio-4">
+                                                        <label for="radio-4">近两日</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck1" id="radio-5">
+                                                        <label for="radio-5">日期</label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>订单状态</td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck2" checked id="radio-6">
+                                                        <label for="radio-6">全部</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck2" id="radio-7">
+                                                        <label for="radio-7">无效订单</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" name="iCheck2" id="radio-8">
+                                                        <label for="radio-8">退单</label>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                    </div>
+                                    <div class="order-search" id="order-search">
+                                            <ul>
+                                                <li>
+                                                    <div class="order-search-title clearfix">
+                                                        <span>01</span>
+                                                        <div class="">
+                                                            <p>下单时间: 01-25 15:12</p>
+                                                            <p>订单号: 154854864486</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-infor">
+                                                        <p><span class="label label-theme">新用户</span></p>
+                                                        <p>李志刚</p>
+                                                        <p>湖南省长沙市芙蓉区定王台街道 <span>456m</span></p>
+                                                    </div>
+                                                    <div class="checked-menu" style="display: none;">
+                                                        <table>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                        </table>
+                                                        <ul>
+                                                            <li>餐盒费 <span>3.00</span></li>
+                                                        </ul>
+                                                        <ul>
+                                                            <li>在线支付立减 <span>6.00</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="express">
+                                                        <b></b>16.14 已送达 伊值熊 15025856936 <a href="">我要索赔</a>
+                                                    </div>
+                                                    <div class="handle">
+                                                        <button type="button" name="button">打印订单</button>
+                                                        <button type="button" name="button">评价骑手</button>
+                                                        <button type="button" dropDown-handle name="button"><i class="iconfont">&#xe61b;</i></button>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="order-search-title clearfix">
+                                                        <span>01</span>
+                                                        <div class="">
+                                                            <p>下单时间: 01-25 15:12</p>
+                                                            <p>订单号: 154854864486</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-infor">
+                                                        <p><span class="label label-theme">新用户</span></p>
+                                                        <p>李志刚</p>
+                                                        <p>湖南省长沙市芙蓉区定王台街道 <span>456m</span></p>
+                                                    </div>
+                                                    <div class="checked-menu" style="display: none;">
+                                                        <table>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                        </table>
+                                                        <ul>
+                                                            <li>餐盒费 <span>3.00</span></li>
+                                                        </ul>
+                                                        <ul>
+                                                            <li>在线支付立减 <span>6.00</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="express">
+                                                        <b></b>16.14 已送达 伊值熊 15025856936 <a href="">我要索赔</a>
+                                                    </div>
+                                                    <div class="handle">
+                                                        <button type="button" name="button">打印订单</button>
+                                                        <button type="button" name="button">评价骑手</button>
+                                                        <button type="button" dropDown-handle name="button"><i class="iconfont">&#xe61b;</i></button>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="order-search-title clearfix">
+                                                        <span>01</span>
+                                                        <div class="">
+                                                            <p>下单时间: 01-25 15:12</p>
+                                                            <p>订单号: 154854864486</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-infor">
+                                                        <p><span class="label label-theme">新用户</span></p>
+                                                        <p>李志刚</p>
+                                                        <p>湖南省长沙市芙蓉区定王台街道 <span>456m</span></p>
+                                                    </div>
+                                                    <div class="checked-menu" style="display: none;">
+                                                        <table>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>小沙拉</td>
+                                                                <td>×12</td>
+                                                                <td>41.00</td>
+                                                            </tr>
+                                                        </table>
+                                                        <ul>
+                                                            <li>餐盒费 <span>3.00</span></li>
+                                                        </ul>
+                                                        <ul>
+                                                            <li>在线支付立减 <span>6.00</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="express">
+                                                        <b></b>16.14 已送达 伊值熊 15025856936 <a href="">我要索赔</a>
+                                                    </div>
+                                                    <div class="handle">
+                                                        <button type="button" name="button">打印订单</button>
+                                                        <button type="button" name="button">评价骑手</button>
+                                                        <button type="button" dropDown-handle name="button"><i class="iconfont">&#xe61b;</i></button>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- 分页 -->
+                            <nav aria-label="..." class="paging">
+                                <ul class="pagination">
+                                    <li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                                  </ul>
+                            </nav>
+                            <div class="col-md-3">
+                                <div class="panel">
+                                    <h6>出餐汇总-今日</h6>
+                                    <ul>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                    </ul>
+                                    <h6>出餐汇总-昨日</h6>
+                                    <ul>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <script src="assets/plug/jquery/jquery-2.2.4.js" charset="utf-8"></script>
+        <script src="assets/plug/bootstrap-3.3.0/js/bootstrap.min.js" charset="utf-8"></script>
+        <script src="assets/javascript/index.js" charset="utf-8"></script>
+        <script src="assets/plug/icheck-1.x/icheck.min.js"></script>
+        <script type="text/javascript">
+            $("#menu").sidenav();
+            $('#order-search').dropdown();
+            $(function(){
+
+                $('input').iCheck({
+                    radioClass: 'iradio_square-red',
+                    increaseArea: '20%' // optional
+                });
+
+            });
+        </script>
+    </body>
+</html>
