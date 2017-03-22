@@ -18,7 +18,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.dongnao.util.JsonUtil;
 import com.dongnao.util.SpringUtil;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -55,22 +57,60 @@ public class PushOrder {
         log.info("sessionId : " + session.getId());
         JSONObject jo = JSON.parseObject(msg);
         
-        pullOrderThread pullOrder = new pullOrderThread(
-                jo.getString("merchantId"), session);
+        List<String> shopIdsList = new ArrayList<String>();
+        
+        String shopIds = jo.getString("shopIds");
+        JSONObject shopIdsJo = JSON.parseObject(shopIds);
+        
+        if (shopIdsJo.containsKey("elemShops")) {
+            JSONArray elemShopsJa = shopIdsJo.getJSONArray("elemShops");
+            if (JsonUtil.isNotBlank(elemShopsJa) && elemShopsJa.size() > 0) {
+                for (Object o : elemShopsJa) {
+                    String shopId = (String)o;
+                    shopIdsList.add(shopId);
+                }
+            }
+        }
+        
+        if (shopIdsJo.containsKey("meituanShops")) {
+            JSONArray meituanShopsJa = shopIdsJo.getJSONArray("meituanShops");
+            if (JsonUtil.isNotBlank(meituanShopsJa)
+                    && meituanShopsJa.size() > 0) {
+                for (Object o : meituanShopsJa) {
+                    String shopId = (String)o;
+                    shopIdsList.add(shopId);
+                }
+            }
+        }
+        
+        if (shopIdsJo.containsKey("baiduShops")) {
+            JSONArray baiduShopsJa = shopIdsJo.getJSONArray("baiduShops");
+            if (JsonUtil.isNotBlank(baiduShopsJa) && baiduShopsJa.size() > 0) {
+                for (Object o : baiduShopsJa) {
+                    String shopId = (String)o;
+                    shopIdsList.add(shopId);
+                }
+            }
+        }
+        
+        Object[] shopIdsArr = shopIdsList.size() > 0 ? shopIdsList.toArray()
+                : new String[] {};
+        
+        pullOrderThread pullOrder = new pullOrderThread(shopIdsArr, session);
         
         new Thread(pullOrder).start();
     }
     
     public class pullOrderThread implements Runnable {
         
-        private String merchantId;
+        private Object[] merchantIds;
         
         private Session session;
         
         public boolean flag = true;
         
-        public pullOrderThread(String merchantId, Session session) {
-            this.merchantId = merchantId;
+        public pullOrderThread(Object[] merchantIds, Session session) {
+            this.merchantIds = merchantIds;
             this.session = session;
         }
         
@@ -83,13 +123,22 @@ public class PushOrder {
         }
         
         public void run() {
+            
+            BasicDBList dblist = new BasicDBList();
+            for (Object merchantId : merchantIds) {
+                dblist.add(merchantId);
+            }
+            
             while (flag) {
                 MongoTemplate mt = (MongoTemplate)SpringUtil.getApplicationContext()
                         .getBean("mongoTemplate");
                 
                 DBCollection dbc = mt.getCollection("dn_order");
                 BasicDBObject cond1 = new BasicDBObject();
-                cond1.put("merchantId", merchantId);
+                BasicDBObject cond2 = new BasicDBObject();
+                
+                cond2.put("$in", dblist);
+                cond1.put("merchantId", cond2);
                 cond1.put("state", "0");
                 
                 DBCursor cursor = dbc.find(cond1);
@@ -107,8 +156,9 @@ public class PushOrder {
                 
                 try {
                     if (session.isOpen()) {
-                        session.getBasicRemote()
-                                .sendText(JSONArray.toJSONString(orders));
+                        if (orders.size() > 0)
+                            session.getBasicRemote()
+                                    .sendText(JSONArray.toJSONString(orders));
                     }
                     else {
                         flag = false;

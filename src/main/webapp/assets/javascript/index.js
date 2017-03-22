@@ -77,7 +77,7 @@
             self.initToggle(self);
         },
         initToggle: function(self){
-            $('button[dropDown-handle]').on('click', function(){
+            $(document.body).on('click','button[dropDown-handle]', function(){
                 $(this).toggleClass('index');
                 $(this).parents('.handle').prevAll('.checked-menu').slideToggle('fast');
             })
@@ -101,8 +101,8 @@
         show : false,
         text : "暂时没有新增订单...",
         img : "assets/images/null.svg",
-        animateIn : "bounceIn",//bounceIn fadeIn
-        animateOut : "bounceOut"//bounceOut fadeOut
+        animateIn : "fadeInDown",//bounceIn fadeIn
+        animateOut : "fadeOutDown"//bounceOut fadeOut
     };
     var template = '<div class="nodata-display">'+
                         '<img src="{img}">'+
@@ -159,10 +159,10 @@
     var defaults = {
         show : false,
         img : "assets/images/loading.svg",
-        animateIn : "bounceIn",//bounceIn
-        animateOut : "bounceOut"
+        animateIn : "zoomIn",//bounceIn
+        animateOut : "zoomOut"
     };
-    var template = '<div class="loading">'+
+    var template = '<div class="loading ">'+
                     '<img src="{img}">'+
                    '</div>';
     function Plugin (element, options) {

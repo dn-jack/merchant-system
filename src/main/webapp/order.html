@@ -3,22 +3,24 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>餐与者-商家中心</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="renderer" content="webkit">
 		<meta name="Keywords" content=""/>
 		<meta name="Description" content=""/>
-		<link rel="Shortcut Icon" href="images/icon.jpg" type="image/x-icon" />
         <meta name="viewport" content="">
-        <link rel="stylesheet" href="./style/bootstrap.min.css">
-        <link rel="stylesheet" href="./style/index.min.css">
+        <link rel="stylesheet" href="assets/plug/bootstrap-3.3.0/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/style/animate.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/plug/jQuery-IOS/lc_switch.css"/>
+        <link href="assets/plug/icheck-1.x/skins/square/red.css" rel="stylesheet">
+        <link rel="stylesheet" href="assets/style/index.min.css">
     </head>
     <body>
         <header>
             <div class="row">
                 <div class="col-md-6">
                     <a href="">
-                        <img src="images/logo.png" alt="">
+                        <img src="./assets/images/logo.png" alt="">
                         <span>商家中心</span>
                     </a>
                 </div>
@@ -32,14 +34,12 @@
                             <li><a href="#">退出</a></li>
                           </ul>
                         </div>
-
                         <div class="input-group">
                           <input type="text" class="form-control" placeholder="搜索订单">
                           <span class="input-group-btn">
                             <button class="btn btn-default" type="button">搜索</button>
                           </span>
                         </div><!-- /input-group -->
-
                     </div>
                 </div>
             </div>
@@ -48,21 +48,21 @@
             <div class="menu" id="menu">
                 <ul class="sidenav-menu">
         	      <li class="index">
-        	        <a href="javascript:;"><i class="iconfont">&#xe60f;</i>首页</a>
+        	        <a href="javascript:;" data-href="index.html"><i class="iconfont">&#xe60f;</i>首页</a>
         	      </li>
         	      <li>
-        	        <a href="javascript:;" data-sidenav-dropdown-toggle>
+        	        <a href="javascript:;">
         	          <span class=""><i class="iconfont">&#xe66f;</i>订单</span>
                       <i class="iconfont drop data-sidenav-dropdown-icon" data-sidenav-dropdown-icon>&#xe72a;</i>
                       <i class="iconfont drop data-sidenav-dropdown-icon show" data-sidenav-dropdown-icon>&#xe605;</i>
         	        </a>
-                    <ul class="sidenav-dropdown" data-sidenav-dropdown>
-        	          <li><a href="javascript:;">订单处理</a></li>
-        	          <li><a href="javascript:;">订单查询</a></li>
+                    <ul class="sidenav-dropdown">
+        	          <li><a href="javascript:;" data-href="order.html">订单处理</a></li>
+        	          <li><a href="javascript:;" data-href="order-search.html">订单查询</a></li>
         	        </ul>
         	      </li>
         	      <li>
-        	        <a href="javascript:;">
+        	        <a href="javascript:;" data-href="help.html">
         	          <span class=""><i class="iconfont">&#xe601;</i>帮助</span>
         	        </a>
         	      </li>
@@ -71,155 +71,115 @@
             <div class="left-full order-page">
                 <div class="container-fluid nav">
                     <div class="row">
-                        <a class='index' href="">订单处理</a>
-                        <a href="">订单查询</a>
-                    </div>
-                </div>
-                <div class="container-fluid page-title">订单信息</div>
-                <div class="scroll">
-                    <div class="container-fluid order-list">
-                        <div class="order-title">
-                            <div class="order-time">
-                                <span>下单时间:</span> 2017-01-09 15:67
-                            </div>
-                            <div class="platform">【美团外卖】</div>
-                            <div class="order-infor">
-                                <span>订单号:</span>
-                                23987539485394539859
-                            </div>
-                            <div class="user">李志刚 先生</div>
-                            <div class="phone-number">
-                                <span>联系方式:</span> 183-7884-9878
-                            </div>
-                            <span class="label label-success">已付款</span>
+                        <div class="col-md-8">
+                        		<span>最新订单</span>
                         </div>
-                        <ul>
-                            <li class="dishes-list">
-                                <table class="">
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-danger">售罄</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-warning">特价</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-primary">打折</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                </table>
-                            </li>
-                            <li class="other-cost list-module">
-                                <ul>
-                                    <li><p>餐盒费</p><span>5.00</span></li>
-                                    <li><p>配送费</p><span>5.00</span></li>
-                                </ul>
-                            </li>
-                            <li class="activity list-module">
-                                <ul>
-                                    <li><p>立减优惠</p><span>-5.00</span></li>
-                                    <li><p>红包抵扣</p><span>-5.00</span></li>
-                                </ul>
-                            </li>
-                            <li class="sum list-module">
-                                <ul>
-                                    <li><p>订单金额</p><span>190.00</span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="">
-                            <button type="button" class="btn btn-theme-yellow">接受订单</button>
-                        </div>
-                    </div>
-                    <div class="container-fluid order-list">
-                        <div class="order-title">
-                            <div class="order-time">
-                                <span>下单时间:</span> 2017-01-09 15:67
-                            </div>
-                            <div class="platform">【美团外卖】</div>
-                            <div class="order-infor">
-                                <span>订单号:</span>
-                                23987539485394539859
-                            </div>
-                            <div class="user">李志刚 先生</div>
-                            <div class="phone-number">
-                                <span>联系方式:</span> 183-7884-9878
-                            </div>
-                            <span class="label label-success">已付款</span>
-                        </div>
-                        <ul>
-                            <li class="dishes-list">
-                                <table class="">
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-danger">售罄</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-warning">特价</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>乳酪大会披萨 <span class="label label-primary">打折</span></td>
-                                        <td>×12</td>
-                                        <td>45.00</td>
-                                        <td>45.00</td>
-                                    </tr>
-                                </table>
-                            </li>
-                            <li class="other-cost list-module">
-                                <ul>
-                                    <li><p>餐盒费</p><span>5.00</span></li>
-                                    <li><p>配送费</p><span>5.00</span></li>
-                                </ul>
-                            </li>
-                            <li class="activity list-module">
-                                <ul>
-                                    <li><p>立减优惠</p><span>-5.00</span></li>
-                                    <li><p>红包抵扣</p><span>-5.00</span></li>
-                                </ul>
-                            </li>
-                            <li class="sum list-module">
-                                <ul>
-                                    <li><p>订单金额</p><span>190.00</span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="">
-                            <button type="button" class="btn btn-theme-yellow">接受订单</button>
+                        <div class="col-md-4">
+	                        	<div class="sound" id="sound" >
+	                        		<i class="iconfont">&#xe611;</i>
+	                        		<i class="iconfont hide">&#xe602;</i>
+	                        	</div>
+	                        	<div class="auto-orders">
+	                        		<span>自动接单</span>
+	                        		<input type="checkbox" name="check-1" value="4" id="lcs_check" class="lcs_check"/>
+	                        	</div>
                         </div>
                     </div>
                 </div>
-                <!-- 分页 -->
-                <nav aria-label="..." class="paging">
-                    <ul class="pagination">
-                        <li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
-                        <li><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-                      </ul>
-                </nav>
-
+                <div id="warnOrderList" class="container-fluid order-box data-list">
+                </div>
             </div>
         </div>
-        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
-        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js" charset="utf-8"></script>
-        <script src="javascript/js.js" charset="utf-8"></script>
+        <audio id="audio" src="assets/resource/ring.mp3"></audio>
+        
+        <script id="order" type="text/template">
+        	<div class="order-bind">
+        		<div class="order-list">
+            		<div class="new-order-title">
+                    	<h4><div class="platform-{platform_type}">【#[Utils.getDict('PLATFORM','{platform_type}')]】</div></h4>
+            			<div class="shopName">店铺：<span>{merchantName}</span></div>
+                    
+                    	<div class="order-num">
+                    		<div class="ordertime">下单时间：<span>{orderTime}</span></div>
+                    		<div class="order-id">订单号：<span>{orderNo}</span> </div>
+                    	</div>
+                </div>
+                <div class="user-info row">
+                		<div class="col-md-12">
+                			<div class="urser-name"> <span>{userName} </span><span class="contect">{phone}</span></div>
+						<div class="address">
+							<p> <i class="iconfont">&#xe68e;</i>{consigneeAddress} <span>[ {distance} ]</span></p>
+						</div>
+                		</div>
+                </div>
+                <div class="menu-list">
+                		<ul></ul>
+                </div>
+                <div class="other-cost">
+                		<ul>
+                			<li class="row">
+                				<div class="col-md-6">餐盒费</div>
+                				<div class="col-md-6">{boxPrice}</div>
+                			</li>
+                			<li class="row">
+                				<div class="col-md-6">配送费</div>
+                				<div class="col-md-6">{distributionPrice}</div>
+                			</li>
+                		</ul>
+                </div>
+                <div class="active-cost">
+                		<ul>
+                			<li class="row">
+                				<div class="col-md-6">立减优惠</div>
+                				<div class="col-md-6">-{discount}</div>
+                			</li>
+                			<li class="row">
+                				<div class="col-md-6">红包抵扣</div>
+                				<div class="col-md-6">-{hongbao}</div>
+                			</li>
+                		</ul>
+                </div>
+                <div class="total row">
+                		<div class="col-md-8 text-left">
+                			<!--<span class="">
+                				{orderActivity}
+                			</span>-->
+                		</div>
+                		<div class="col-md-4">
+                			<span>(合计) </span>{orderPrice}
+                		</div>
+                </div>
+                <div class="row getOrder">
+                		<button class="btn btn-theme-yellow">接受订单</button>
+                </div>
+        	</div>
+        </script>
+        <script id="detail" type="text/template">
+        	<li class="row">
+				<div class="col-md-3">
+					<h6>{dishName}</h6> <span class="label label-default">{activityName}</span>
+				</div>
+				<div class="col-md-3">
+					×{count}
+				</div>
+				<div class="col-md-3">
+					{price1}
+				</div>
+				<div class="col-md-3">
+					{price2}
+				</div>
+			</li>
+        </script>
+        <script src="assets/plug/jquery/jquery-2.2.4.js" charset="utf-8"></script>
+        <script src="assets/javascript/common.js"></script>
+        <script src="assets/plug/bootstrap-3.3.0/js/bootstrap.min.js" charset="utf-8"></script>
+        <script src="assets/plug/jQuery-IOS/js/lc_switch.js" type="text/javascript" charset="utf-8"></script>
+        <script src="assets/plug/icheck-1.x/icheck.min.js"></script>
+        <script src="assets/javascript/index.js" charset="utf-8"></script>
+        <script type="text/javascript" src="assets/javascript/order.js"></script>
+       <script type="text/javascript" src="assets/javascript/websocket.js"></script>
         <script type="text/javascript">
-            $("#menu").sidenav();
+        		$('#lcs_check').lc_switch();//接单UI生成
         </script>
     </body>
 </html>

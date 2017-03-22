@@ -63,7 +63,7 @@ button {
   outline: 0;
   font-weight: inherit;
   font-style: inherit;
-  font-family: "Segoe UI", "Lucida Grande", Helvetica, Arial, "Microsoft YaHei", FreeSans, Arimo, "Droid Sans", "wenquanyi micro hei", "Hiragino Sans GB", "Hiragino Sans GB W3", "FontAwesome", sans-serif;
+  font-family: Helvetica Neue,Arial,Microsoft Yahei,WenQuanYi Micro Hei,sans-serif;
   vertical-align: baseline;
 }
 html,
@@ -143,8 +143,15 @@ body {
   color: #ffffff;
   text-decoration: none;
 }
+.label {
+	font-size: 14px;
+}
 .label-theme {
   background-color: #F47115;
+}
+.label-reminder {
+	background-color: #ff2d4b;
+	margin-right: 10px;
 }
 .theme-form-control {
   vertical-align: middle;
@@ -184,7 +191,7 @@ body {
   text-align: center;
 }
 .loading img {
-  width: 30%;
+  width: 15%;
   margin-top: 50px;
 }
 .empty {
@@ -195,13 +202,13 @@ body {
 }
 .nodata-display{
   text-align: center;
-  margin:0 15px;
+  margin-top:15px;
   padding: 20px 0;
   background-color: #fff;
   display: none;
 }
 .nodata-display img{
-  width: 30%;
+  width: 20%;
 }
 .nodata-display h5{
   font-size: 18px;
@@ -234,10 +241,12 @@ body {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f47115;
 }
 @font-face {
-  font-family: 'iconfont';
-  /* project id 217111 */
-  src: url('http://at.alicdn.com/t/font_pj1x3rschfo5hfr.eot');
-  src: url('http://at.alicdn.com/t/font_pj1x3rschfo5hfr.eot?#iefix') format('embedded-opentype'), url('http://at.alicdn.com/t/font_pj1x3rschfo5hfr.woff') format('woff'), url('http://at.alicdn.com/t/font_pj1x3rschfo5hfr.ttf') format('truetype'), url('http://at.alicdn.com/t/font_pj1x3rschfo5hfr.svg#iconfont') format('svg');
+  font-family: 'iconfont';  /* project id 217111 */
+  src: url('http://at.alicdn.com/t/font_mimlw8bxhm730udi.eot');
+  src: url('http://at.alicdn.com/t/font_mimlw8bxhm730udi.eot?#iefix') format('embedded-opentype'),
+  url('http://at.alicdn.com/t/font_mimlw8bxhm730udi.woff') format('woff'),
+  url('http://at.alicdn.com/t/font_mimlw8bxhm730udi.ttf') format('truetype'),
+  url('http://at.alicdn.com/t/font_mimlw8bxhm730udi.svg#iconfont') format('svg');
 }
 .iconfont {
   font-family: "iconfont" !important;
@@ -490,26 +499,67 @@ header .user-info .btn-group ul.dropdown-menu {
 .wrapper .container-fluid.nav {
   background-color: #ffffff;
   line-height: 50px;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  z-index: 99;
 }
 .wrapper .container-fluid.nav .row {
   margin: auto;
 }
+.order-page .nav span {
+	font-size: 16px;
+}
 .order-page .nav {
   box-shadow: 0 2px 1px 0 rgba(0, 0, 0, 0.2);
 }
+.order-page .nav ul {
+	margin-left: 20px;
+	display: inline-block;
+}
+.order-page .nav ul li{
+	padding: 0 10px;
+	display: inline-block;
+	cursor: pointer;
+	
+}
+.order-page .nav ul li:hover {
+	color: #F47115;
+	border-bottom: 3px solid #F47115;
+}
+.order-page .nav ul li.active {
+	color: #F47115;
+	border-bottom: 3px solid #F47115;
+}
 .order-page .nav a {
+  box-sizing: border-box;
   font-size: 16px;
   color: #9e9e9e;
   display: inline-block;
   margin: 0px 10px;
 }
+.lcs_wrap {
+	margin-top: -10px;
+}
 .order-page .nav a.index {
   color: #F47115;
   border-bottom: 2px solid #F47115;
 }
+.order-page .nav .auto-orders span{
+	font-size:14px;
+	margin-right: 10px;
+	line-height: 52px;
+}
+.auto-orders {
+	float: right;
+	margin-right: 20px;
+}
 .order-page .nav div.sound {
   float: right;
   cursor: pointer;
+}
+.order-page .nav div.sound i {
+	font-size: 20px;
 }
 .order-page .nav div.sound .show {
   display: block;
@@ -572,8 +622,36 @@ header .user-info .btn-group ul.dropdown-menu {
 .container-fluid.order-box .new-order-title h4 span {
   font-size: 14px;
 }
-.container-fluid.order-box .new-order-title h4 .meituan {
+.container-fluid.order-box .new-order-title h4{
+  display: inline-block;
+}
+.container-fluid.order-box .user-info {
+	padding: 10px 0px;
+	border-bottom: 1px solid #CECECE;
+}
+.container-fluid.order-box .user-info .urser-name {
+	display: inline-block;
+	font-size: 20px;
+	font-weight: bold;
+}
+.container-fluid.order-box .user-info .contect {
+	
+	margin-left: 15px;
+}
+.container-fluid.order-box .user-info .address {
+	margin-left: 20px;
+	display: inline-block;
+	font-size: 16px;
+	margin-top: 5px;
+}
+.platform-elm {
+  color: #359BF5;
+}
+.platform-mt {
   color: #42E452;
+}
+.platform-bdwm {
+  color: red;
 }
 .container-fluid.order-list {
   margin-left: 15px;
@@ -639,7 +717,8 @@ header .user-info .btn-group ul.dropdown-menu {
   text-align: center;
 }
 .container-fluid.order-list .dishes-list tr td:first-child {
-  text-align: left;
+	width: 50%;
+  	text-align: left;
 }
 .container-fluid.order-list .dishes-list tr td:last-child {
   text-align: right;
@@ -660,6 +739,18 @@ header .user-info .btn-group ul.dropdown-menu {
 .container-fluid.order-list .sum span {
   font-size: 24px;
 }
+.container-fluid.order-list .distribution-type{
+	float: left;
+	margin-top: 30px;
+	margin-left: 20px;
+} 
+.container-fluid.order-list .distribution-type .iradio_square-red {
+	margin-right: 5px;
+}
+.container-fluid.order-list .distribution-type .special-delivery {
+	margin-right: 10px;
+}
+
 .scroll {
   position: absolute;
   left: 0px;
@@ -747,6 +838,24 @@ header .user-info .btn-group ul.dropdown-menu {
   width: 100px;
   font-size: 14px;
 }
+.order-search-page .filter tr .date {
+	position: relative;
+}
+.order-search-page .filter tr td .date-form {
+	left: 0px;
+	top: 0px;
+	position: absolute;
+	display: inline-block;
+	left: 60px;
+	width: 500px;
+}
+.order-search-page .filter tr td .date-form input {
+	display: inline-block;
+	padding: 0px 10px;
+}
+.order-search-page .filter tr td .date-form div {
+	display: inline-block;
+}
 .order-search-page .order-search > ul > li {
   background-color: #ffffff;
   margin-top: 15px;
@@ -771,12 +880,21 @@ header .user-info .btn-group ul.dropdown-menu {
   font-size: 12px;
   color: #cacaca;
 }
+.order-search-page .order-search .order-search-title h3 {
+	float: right;
+	line-height: 52px;
+	margin-right: 10px;
+	color: #7B7B7B;
+	font-size: 18px;
+	color: #000000;
+}
 .order-search-page .order-search .user-infor {
   padding: 10px 15px;
   border-bottom: 1px solid #cecece;
 }
 .order-search-page .order-search .user-infor p {
   padding: 5px 0px;
+  font-size: 20px;
 }
 .order-search-page .order-search .user-infor p:nth-child(2) {
   font-size: 14px;
@@ -785,10 +903,18 @@ header .user-info .btn-group ul.dropdown-menu {
   float: right;
 }
 .order-search-page .order-search .express {
-  color: #359BF5;
   padding: 0px 15px;
   line-height: 34px;
   border-bottom: 1px solid #cecece;
+}
+.order-search-page .order-search .express h4 {
+	text-align: right;
+	padding: 10px 0px;
+	color: #F47115;
+}
+.order-search-page .order-search .express h4 span {
+	color: #666666;
+	font-size: 14px;
 }
 .order-search-page .order-search .express b {
   width: 8px;
@@ -812,6 +938,11 @@ header .user-info .btn-group ul.dropdown-menu {
   height: 33px;
   padding: 0px 20px;
   margin-right: 10px;
+}
+.order-search-page .order-search .handle button:hover {
+	background-color: #F47115;
+	border: 1px solid #F47115;
+	color: white;
 }
 .order-search-page .order-search .handle button:last-child {
   margin-right: 0px;
@@ -841,6 +972,7 @@ header .user-info .btn-group ul.dropdown-menu {
 .order-search-page .order-search .checked-menu table {
   width: 100%;
   border-bottom: 1px solid #cecece;
+  padding: 10px 0px;
 }
 .order-search-page .order-search .checked-menu table tr {
   line-height: 20px;
@@ -1169,7 +1301,7 @@ header .user-info .btn-group ul.dropdown-menu {
 
 }
 [name='submit'] {
-    height: 44px;
+  height: 44px;
   width: 100%;
   color: #ffffff;
   background-color: #F47115;
@@ -1188,4 +1320,143 @@ footer {
 	display: inline-block;
 	width: 200px;
 	overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+
+
+.header {
+	height: 70px;
+	width: 1240px;
+	margin: 0 auto;
+}
+.header img {
+	margin-top: 15px;
+	height: 40px;
+	float: left;
+}
+.header span {
+	color: #f47115;
+	margin-top: 35px;
+	margin-left: 10px;
+	font-size: 14px;
+	display: inline-block;
+	float: left;
+}
+
+/*- 菜单 -*/
+.order-box {
+	position: relative;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+	overflow-y: scroll;
+}
+.order-box .order-list{
+	background: white;
+	margin-top: 20px;
+	border: 1px solid #CECECE;
+}
+.order-box .order-list .new-order-title {
+	height: 50px;
+	line-height: 50px;
+	border-bottom: 1px solid #CECECE;
+}
+.order-box .order-list .new-order-title div{
+	display: inline-block;
+	margin-left: 10px;
+}
+.order-box .order-list .new-order-title .shopName span{
+	font-size: 16px;
+}
+.order-box .order-list .new-order-title .urser-name span{
+	font-size: 16px;
+}
+.order-box .order-list .new-order-title .phone span{
+	font-size: 16px;
+}
+.order-box .order-list .new-order-title .order-num {
+	color: #73716E;
+}
+.order-box .order-list .new-order-title .meituan {
+	font-size: 14px;
+	color: #42E452;
+}
+.menu-list {
+	border-bottom: 1px solid #CECECE;
+}
+.menu-list ul li {
+	line-height: 60px;
+	height: 60px;
+	font-size: 14px;
+	background-color: ;
+}
+.menu-list ul li:hover {
+	background-color: #f5f5f5;
+}
+
+.menu-list ul li div {
+	text-align: center;
+}
+.menu-list ul li div:first-child {
+	text-align: left;
+}
+.menu-list ul li div:nth-child(2) {
+	font-weight: 500;
+}
+.menu-list ul li div:last-child {
+	text-align: right;
+	font-size: 18px;
+}
+.menu-list ul li div:nth-child(3) {
+	text-decoration: line-through;
+	color: #73716E;
+}
+.menu-list h6{
+	font-size: 16px;
+	display: inline-block;
+}
+
+.other-cost {
+	border-bottom: 1px solid #CECECE;
+	font-size: 14px;
+}
+.other-cost ul li {
+	line-height: 40px;
+	height: 40px;
+}
+.other-cost ul li:hover {
+	background-color: #F5F5F5;
+}
+.other-cost ul li div:last-child {
+	text-align: right;
+	font-size: 18px;
+}
+.active-cost {
+	border-bottom: 1px solid #CECECE;
+	font-size: 14px;
+}
+.active-cost ul li {
+	line-height: 40px;
+	height: 40px;
+}
+.active-cost ul li:hover {
+	background-color: #F5F5F5;
+}
+.active-cost ul li div:last-child {
+	text-align: right;
+	font-size: 18px;
+}
+.total {
+	text-align: right;
+	font-size: 20px;
+	line-height: 40px;
+}
+.total span {
+	font-size: 12px;
+}
+.container-fluid.order-box .row.getOrder {
+	text-align: right;
+	height: 60px;
+	line-height: 60px;
+	margin-right: 10px;
 }

@@ -93,11 +93,11 @@ public class OrderServiceImpl implements OrderService {
         JSONObject reJo = new JSONObject();
         if (count > 0) {
             reJo.put("respCode", "0000");
-            reJo.put("respDesc", "订单保存成功！");
+            reJo.put("respDesc", "接单成功！");
         }
         else {
             reJo.put("respCode", "9999");
-            reJo.put("respDesc", "订单保存失败！");
+            reJo.put("respDesc", "接单失败！");
         }
         return reJo.toString();
     }

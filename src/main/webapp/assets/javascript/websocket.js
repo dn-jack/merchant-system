@@ -38,7 +38,7 @@ $(function() {
 
 			function start() {
 				var param = {};
-				webSocket.send('{merchantId:' + localStorage.getItem("username") +'}');
+				webSocket.send('{shopIds:' + localStorage.getItem("shopIds") +'}');
 				return false;
 			}
 		});

@@ -1,0 +1,22 @@
+[{
+	"shopName": "猿串（解放西路店）",
+	"orderTime" : "2017-01-09 15:67",
+	"orderNo" : "23987539485394539859",
+	"userName" : "李志刚1",
+	"times": 6,
+	"consigneeAddress" : "长远大厦风火林网咖22号机",
+	"distance": "1.93km",
+	"dishes" : [{
+		"dishName" : "乳酪大会披萨",
+		"activityName" : "特价",
+		"count" : "12",
+		"price1" : "45",
+		"price2" : "43"
+	}
+	],
+	"boxPrice" : "5.00",
+	"goodsSummary": "共 3 件商品",
+	"orderLatestStatus":"订单已完成",
+	"platformType" : "elm",
+	"orderPrice" : "200.55"
+}]

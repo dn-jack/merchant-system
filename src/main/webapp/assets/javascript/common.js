@@ -12,5 +12,21 @@ var CONSTANTS = {
 var Utils = {
 	timeout : function(callback,time){
 		window.setTimeout(callback,time||CONSTANTS.EFFECT);
+	},
+	getDict : function(dict,key){
+		return DICTS[dict][key]||"";
+	}
+};
+
+var DICTS = {
+	PLATFORM : {
+		"elm" : "饿了么",
+		"mt" : "美团",
+		"bdwm" : "百度外卖"
+	},
+	ORDER_STATUS : {
+		"0" : "等待配送",
+		"1" : "正在配送",
+		"2" : "订单完成"
 	}
 };
