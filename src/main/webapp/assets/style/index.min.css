@@ -521,7 +521,7 @@ header .user-info .btn-group ul.dropdown-menu {
 	padding: 0 10px;
 	display: inline-block;
 	cursor: pointer;
-	
+
 }
 .order-page .nav ul li:hover {
 	color: #F47115;
@@ -635,7 +635,7 @@ header .user-info .btn-group ul.dropdown-menu {
 	font-weight: bold;
 }
 .container-fluid.order-box .user-info .contect {
-	
+
 	margin-left: 15px;
 }
 .container-fluid.order-box .user-info .address {
@@ -743,7 +743,7 @@ header .user-info .btn-group ul.dropdown-menu {
 	float: left;
 	margin-top: 30px;
 	margin-left: 20px;
-} 
+}
 .container-fluid.order-list .distribution-type .iradio_square-red {
 	margin-right: 5px;
 }
@@ -929,7 +929,13 @@ header .user-info .btn-group ul.dropdown-menu {
   float: right;
 }
 .order-search-page .order-search .handle {
+  overflow: hidden;
   padding: 20px 15px;
+  position: relative;
+}
+.order-search-page .order-search .handle input {
+  position: absolute;
+  left: -200px;
 }
 .order-search-page .order-search .handle button {
   font-size: 14px;
