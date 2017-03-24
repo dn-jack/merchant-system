@@ -151,19 +151,15 @@
                             </nav>
                             <div class="col-md-3">
                                 <div class="panel">
-                                    <h6>出餐汇总-今日</h6>
+                                    <h6>今日订单概况</h6>
                                     <ul>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>已接订单：20笔</li>
+                                        <li>今日营业总额：200000元</li>
                                     </ul>
-                                    <h6>出餐汇总-昨日</h6>
+                                    <h6>昨日订单概况</h6>
                                     <ul>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                      <li>已接订单：20笔</li>
+                                      <li>今日营业总额：200000元</li>
                                     </ul>
                                 </div>
                             </div>
@@ -183,7 +179,7 @@
                     <h3>{orderLatestStatus}</h3>
                 </div>
                 <div class="user-infor">
-                    <p>{userName}</p>
+                    <p>{userName} <span>{phone}</span></p>
                     <p>{shopName}<b class="platform-{platformType}">【#[Utils.getDict('PLATFORM','{platformType}')]】</b></p>
                 </div>
                 <div class="checked-menu" style="display: none;">
@@ -206,7 +202,11 @@
                 </div>
                 <div class="handle">
                     <button type="button" name="button">打印订单</button>
-                    <button type="button" dropDown-handle name="button"><i class="iconfont">&#xe61b;</i></button>
+                    <button type="button" class="copy-order">复制订单</button>
+                    <input type="text" class="content" value="copyContent">
+                    <button type="button" dropDown-handle name="button">
+                      <i class="iconfont">&#xe61b;</i>
+                    </button>
                 </div>
             </li>
         </script>
