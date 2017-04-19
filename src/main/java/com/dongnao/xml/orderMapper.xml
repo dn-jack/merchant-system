@@ -14,23 +14,79 @@
 			<result column="PRINT_FLAG" property="printFlag" jdbcType="VARCHAR" />
 			<result column="REMARK" property="remark" jdbcType="VARCHAR" />
 		</resultMap>-->
-	
+	<sql id="Base_Column_List">store_id
+										,store_name
+										,order_no
+										,good_name
+										,good_unit_price
+										,good_num
+										,platform_type
+	</sql>
+	<insert id="saveDishes" parameterType="com.dongnao.bean.AccountSaleGoods">
+		insert into account_sale_goods (
+		<include refid="Base_Column_List" />
+		)values (
+														#{storeId,jdbcType=VARCHAR}
+														,#{storeName,jdbcType=VARCHAR}
+														,#{orderNo,jdbcType=VARCHAR}
+														,#{goodName,jdbcType=VARCHAR}
+														,#{goodUnitPrice,jdbcType=DECIMAL}
+														,#{goodNum,jdbcType=INTEGER}
+														,#{platformType,jdbcType=VARCHAR}
+									)
+	</insert>
 	
 	<insert id="saveOrder" parameterType="com.dongnao.bean.AccountOrderDetail">
   	
-	insert into account_order_detail(create_date,store_id,store_ELM_id,store_name,order_type,order_time,order_no,prices,meal_fee,merchant_activities_subsidies,platform_activities_subsidies,service_rate,service_charge,
+	insert into account_order_detail(
+		<if test="createDate != null and createDate != ''">
+	create_date,
+		</if>
+	store_id,store_ELM_id,store_name,order_type,
+		<if test="orderTime != null and orderTime != ''">
+	order_time,
+		</if>
+	order_no,orgin_price,meal_fee,merchant_activities_subsidies,platform_activities_subsidies,service_rate,service_charge,
 	platform_dist_charge,settlement_amount,distribution_mode,remark,platform_type,
-	<if test="bookedTime != null and bookedTime != ''">
+		<if test="bookedTime != null and bookedTime != ''">
 	booked_time,
-	</if>
-	consignee_name,active_time,active_total,goods_name,goods_quality,goods_id,goods_price)
-		values (str_to_date(#{createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),#{storeId,jdbcType=VARCHAR}
-		,#{storeELMId,jdbcType=VARCHAR},#{storeName,jdbcType=VARCHAR},#{orderType,jdbcType=VARCHAR},str_to_date(#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d %T'),#{orderNo,jdbcType=VARCHAR},#{prices},#{mealFee},#{merchantActivitiesSubsidies},#{platformActivitiesSubsidies},#{serviceRate},#{serviceCharge}
+		</if>
+	consignee_name,
+		<if test="activeTime != null and activeTime != ''">
+	active_time,
+		</if>
+	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr)
+		values (
+		<if test="createDate != null and createDate != ''">
+		str_to_date(#{createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),
+		</if>
+		#{storeId,jdbcType=VARCHAR}
+		,#{storeELMId,jdbcType=VARCHAR},#{storeName,jdbcType=VARCHAR},#{orderType,jdbcType=VARCHAR},
+		<if test="orderTime != null and orderTime != ''">
+		str_to_date(#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d %T'),
+		</if>
+		#{orderNo,jdbcType=VARCHAR},#{orginPrice},#{mealFee},#{merchantActivitiesSubsidies},#{platformActivitiesSubsidies},#{serviceRate},#{serviceCharge}
 		,#{platformDistCharge},#{settlementAmount},#{distributionMode},#{remark},#{platformType},
 		<if test="bookedTime != null and bookedTime != ''">
 		#{bookedTime},
 		</if>
-		#{consigneeName},#{activeTime},#{activeTotal},#{goodsName},#{goodsQuality},#{goodsId},#{goodsPrice})
+		#{consigneeName},
+		<if test="activeTime != null and activeTime != ''">
+		#{activeTime},
+		</if>
+		#{activeTotal},#{goodsName},#{goodsQuality},#{goodsId},#{goodsPrice},#{consigneeAddress,jdbcType=VARCHAR})
 	</insert>
+	
+	<select id="queryOrder" parameterType="java.util.Map" resultType="java.util.Map">
+  		select * from account_order_detail 
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="beginTime != null and beginTime != ''" >
+				and create_date >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="username != null and username != ''" >
+				and store_id=#{username,jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</select>
 	
 </mapper>

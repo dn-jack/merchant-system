@@ -1,9 +1,28 @@
 package com.dongnao.controller;
 
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +42,9 @@ import com.dongnao.util.ElemeUtil;
 import com.dongnao.util.HttpRequest;
 import com.dongnao.util.HttpsRequestUtil;
 import com.dongnao.util.JsonUtil;
+import com.dongnao.util.Prient;
 import com.dongnao.util.SpringContextHolder;
+import com.dongnao.util.UrlUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -41,6 +62,8 @@ public class OrderController {
     
     private static transient Logger log = LoggerFactory.getLogger(OrderController.class);
     
+    Map<String, String> mmm = new HashMap<String, String>();
+    
     @Autowired
     @Qualifier("mongoTemplate")
     MongoTemplate mt;
@@ -48,19 +71,237 @@ public class OrderController {
     @Autowired
     OrderService os;
     
+    @RequestMapping("/getToten")
+    public @ResponseBody String getToten(HttpServletRequest request,
+            HttpServletResponse response, @RequestBody String param) {
+        Map<String, String> retStrMap = HttpRequest.bdsendGet("https://wmpass.baidu.com/wmpass/openservice/captchapair?protocal=https&callback=jQuery1110015827547668209752_1490844419324&_=1490844419343");
+        
+        String retStr = retStrMap.get("result");
+        String cookies = retStrMap.get("cookie");
+        
+        mmm.put("tokenCookie", cookies);
+        mmm.put("tracecode", retStrMap.get("tracecode"));
+        mmm.put("P3P", retStrMap.get("P3P"));
+        
+        String data = retStr.substring((retStr.indexOf("(")) + 1).replace(");",
+                "");
+        log.info(data);
+        JSONObject dataJo = JSON.parseObject(data);
+        JSONObject resultJo = dataJo.getJSONObject("data");
+        String token = resultJo.getString("token");
+        log.info("------------token------------" + token);
+        mmm.put("token", token);
+        
+        HttpSession session = request.getSession();
+        session.setAttribute("token", token);
+        session.setAttribute("tokenCookie", cookies);
+        session.setAttribute("tracecode", retStrMap.get("tracecode"));
+        session.setAttribute("P3P", retStrMap.get("P3P"));
+        
+        JSONObject retJo = new JSONObject();
+        retJo.put("respCode", "0000");
+        retJo.put("token", token);
+        return retJo.toString();
+    }
+    
+    /** 
+     * @Description 调用js对百度账号的密码加密 
+     * @param @param password
+     * @param @return 参数 
+     * @return String 返回类型  
+     * @throws 
+     */
+    private String invokeJsForPwd(String password) {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("javascript");
+        
+        FileReader reader;
+        String codepwd = "";
+        try {
+            reader = new FileReader(OrderController.class.getResource("")
+                    .getFile() + File.separator + "code.js");
+            engine.eval(reader);
+            
+            if (engine instanceof Invocable) {
+                Invocable invoke = (Invocable)engine; // 调用merge方法，并传入两个参数    
+                
+                codepwd = (String)invoke.invokeFunction("h", password);
+                
+                log.info("-----------------password--------------->" + codepwd);
+            }
+            
+            reader.close();
+        }
+        catch (FileNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } // 执行指定脚本   
+        catch (ScriptException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return codepwd;
+    }
+    
+    @RequestMapping("/bdlogin")
+    public @ResponseBody String bdlogin(HttpServletRequest request,
+            @RequestBody String param) {
+        
+        JSONObject paramJo = JSON.parseObject(param);
+        String code = paramJo.getString("code");
+        String username = paramJo.getString("username");
+        String password = paramJo.getString("password");
+        log.info("-----------password----------" + password);
+        String codepwd = invokeJsForPwd(password);
+        HttpSession session = request.getSession();
+        String token = "";
+        String tokenCookie = "";
+        String tracecode = "";
+        String P3P = "";
+        if (JsonUtil.isNotBlank(session.getAttribute("token"))) {
+            token = (String)session.getAttribute("token");
+        }
+        if (JsonUtil.isNotBlank(session.getAttribute("tokenCookie"))) {
+            tokenCookie = (String)session.getAttribute("tokenCookie");
+        }
+        if (JsonUtil.isNotBlank(session.getAttribute("tracecode"))) {
+            tracecode = (String)session.getAttribute("tracecode");
+        }
+        if (JsonUtil.isNotBlank(session.getAttribute("P3P"))) {
+            P3P = (String)session.getAttribute("P3P");
+        }
+        
+        String queryStr = "redirect_url=https%253A%252F%252Fwmcrm.baidu.com%252F&return_url=https%253A%252F%252Fwmcrm.baidu.com%252Fcrm%252Fsetwmstoken&type=1&channel=pc&account="
+                + username
+                + "&upass="
+                + codepwd
+                + "&captcha="
+                + code
+                + "&token=" + token;
+        Map<String, String> retStr = null;
+        String queryOrderCookie = "";
+        
+        JSONObject retJo = new JSONObject();
+        try {
+            retStr = HttpsRequestUtil.bddoPost("https://wmpass.baidu.com/api/login",
+                    queryStr,
+                    "UTF-8",
+                    300000,
+                    300000,
+                    tokenCookie,
+                    tracecode,
+                    P3P);
+            log.info(retStr.get("cookie"));
+            log.info(retStr.get("result"));
+            
+            String WMSTOKEN = "";
+            JSONObject loginJo = JSON.parseObject(retStr.get("result"));
+            if (0 == loginJo.getInteger("errno")) {
+                JSONObject dataJo = loginJo.getJSONObject("data");
+                WMSTOKEN = dataJo.getString("WMSTOKEN");
+                queryOrderCookie = tokenCookie
+                        + retStr.get("cookie")
+                        + "newyear=open;new_remind_time=1491707183;new_order_time=1491707474;"
+                        + "WMSTOKEN=" + WMSTOKEN;
+                retJo.put("respCode", "0000");
+                retJo.put("queryOrderCookie", queryOrderCookie);
+                return retJo.toString();
+            }
+            
+            retJo.put("respCode", "9999");
+            retJo.put("respMsg", loginJo.getString("errmsg"));
+            
+            //            Map<String, String> params = new HashMap<String, String>();
+            //            Map<String, String> headers = new HashMap<String, String>();
+            //            params.put("qt", "neworderlist");
+            //            params.put("display", "json");
+            //            headers.put("Cookie", tokenCookie + retStr.get("cookie"));
+            //            log.info(queryOrderCookie);
+            //            String orderInfo = HttpUtil.doGet("https://wmcrm.baidu.com/crm?hhs=secure&qt=neworderlist&display=json",
+            //                    queryOrderCookie,
+            //                    tracecode);
+            //            log.info("orderinfo---------------------->" + orderInfo);
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return retJo.toString();
+    }
+    
     @RequestMapping("/login")
     public @ResponseBody String login(HttpServletRequest request,
             @RequestBody String param) {
+        JSONObject resultJo = new JSONObject();
         JSONObject paramJo = JSON.parseObject(param);
-        String retStr = HttpRequest.sendGet("http://180.76.173.250:8087/dncyz/getShopId.do?userName="
-                + paramJo.getString("userName")
-                + "&password="
+        String retStr = HttpRequest.sendGet(UrlUtil.login + "?userName="
+                + paramJo.getString("userName") + "&password="
                 + paramJo.getString("password"));
         
         log.info("----------------获取到的参与者账号对应的外卖平台账号--------------------"
                 + retStr);
         
+        Map<String, String> baiduMap = new HashMap<String, String>();
+        JSONObject retJo = JSON.parseObject(retStr);
+        if ("0000".equals(retJo.getString("respCode"))) {
+            JSONArray resultJa = retJo.getJSONArray("result");
+            for (Object o : resultJa) {
+                JSONObject eachJo = (JSONObject)o;
+                if (eachJo.containsKey("baiduId")
+                        && JsonUtil.isNotBlank(eachJo.get("baiduId"))) {
+                    baiduMap.put(eachJo.getString("baiduId"),
+                            eachJo.getString("baidupwd"));
+                }
+            }
+            
+            if (baiduMap.entrySet().size() > 0) {
+                
+                String code = paramJo.getString("code");
+                for (Map.Entry<String, String> entry : baiduMap.entrySet()) {
+                    JSONObject entryJo = new JSONObject();
+                    entryJo.put("username", entry.getKey());
+                    entryJo.put("password", entry.getValue());
+                    entryJo.put("code", code);
+                    String loginInfo = bdlogin(request, entryJo.toString());
+                    JSONObject loginJo = JSON.parseObject(loginInfo);
+                    if ("0000".equals(loginJo.getString("respCode"))) {
+                        insertToMongo(entry.getKey(),
+                                loginJo.getString("queryOrderCookie"));
+                    }
+                    else {
+                        resultJo.put("respCode", "9999");
+                        resultJo.put("respMsg", loginJo.getString("respMsg"));
+                        return resultJo.toString();
+                    }
+                }
+            }
+            
+        }
+        
         return retStr;
+    }
+    
+    private void insertToMongo(String username, String loginInfo) {
+        
+        JSONObject info = new JSONObject();
+        info.put("username", username);
+        info.put("loginInfo", loginInfo);
+        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                .getBean("mongoTemplate");
+        DBCollection dbc = mt.getCollection("dn_bdloginInfo");
+        BasicDBObject cond1 = new BasicDBObject();
+        cond1.put("username", username);
+        dbc.remove(cond1);
+        mt.remove(cond1, "dn_bdloginInfo");
+        mt.insert(info.toString(), "dn_bdloginInfo");
     }
     
     @RequestMapping("/searchOrder")
@@ -115,7 +356,42 @@ public class OrderController {
                 for (String shopId : elemshopIdsList) {
                     JSONObject queryJo = elemQueryOrder(param, shopId);
                     if ("0000".equals(queryJo.getString("respCode"))) {
-                        orderJa.add(elemQueryOrder(param, shopId));
+                        JSONArray ja = queryJo.getJSONArray("retJa");
+                        
+                        for (Object oo : ja) {
+                            JSONObject jo = (JSONObject)oo;
+                            orderJa.add(jo);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if ("all".equals(platformType) || "mt".equals(platformType)) {
+            if (mtshopIdsList.size() > 0) {
+                for (String shopId : mtshopIdsList) {
+                    JSONObject queryJo = mtQueryOrder(param, shopId);
+                    if ("0000".equals(queryJo.getString("respCode"))) {
+                        JSONArray ja = queryJo.getJSONArray("orderList");
+                        
+                        for (Object oo : ja) {
+                            JSONObject jo = (JSONObject)oo;
+                            orderJa.add(jo);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if ("all".equals(platformType) || "bdwm".equals(platformType)) {
+            if (bdwmshopIdsList.size() > 0) {
+                for (String shopId : bdwmshopIdsList) {
+                    JSONObject queryJo = bdwmQueryOrder(param, shopId);
+                    if ("0000".equals(queryJo.getString("respCode"))) {
+                        JSONArray ja = queryJo.getJSONArray("resultJa");
+                        for (Object oo : ja) {
+                            orderJa.add(oo);
+                        }
                     }
                 }
             }
@@ -126,6 +402,145 @@ public class OrderController {
         reJo.put("respDesc", "查询成功！");
         reJo.put("result", orderJa);
         return reJo.toString();
+    }
+    
+    private void handbdwdOrder(JSONArray orderJa, List<Map> result) {
+        if (result == null || result.size() == 0) {
+            return;
+        }
+        
+        for (Map map : result) {
+            orderJa.add(handEachJo(map));
+        }
+    }
+    
+    private JSONObject handEachJo(Map map) {
+        JSONObject jo = new JSONObject();
+        jo.put("shopName", map.get("store_name".toUpperCase()));
+        jo.put("orderTime", map.get("order_time".toUpperCase()));
+        jo.put("orderNo", map.get("order_no".toUpperCase()));
+        jo.put("userName", map.get("consignee_name".toUpperCase()));
+        jo.put("consigneeAddress", map.get("target_addr".toUpperCase()));
+        
+        jo.put("boxPrice", map.get("meal_fee".toUpperCase()));
+        jo.put("distributionPrice",
+                map.get("platform_dist_charge".toUpperCase()));
+        jo.put("orderPrice", map.get("platform_dist_charge".toUpperCase()));
+        return jo;
+    }
+    
+    private JSONObject bdwmQueryOrder(String param, String username) {
+        try {
+            JSONObject paramJo = JSON.parseObject(param);
+            BasicDBObject cond3 = new BasicDBObject();
+            if (paramJo.containsKey("beginTime")) {
+                BasicDBObject cond1 = new BasicDBObject();
+                cond1.put("$gt", paramJo.getString("beginTime"));
+                cond3.put("orderTime", cond1);
+            }
+            cond3.put("merchantId", username);
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            DBCollection dbc = mt.getCollection("dn_order");
+            DBCursor cursor = dbc.find(cond3);
+            JSONArray resultJa = new JSONArray();
+            if (cursor.hasNext()) {
+                DBObject each = cursor.next();
+                each.put("shopName", each.get("merchantName"));
+                each.put("platformType", each.get("platform_type"));
+                resultJa.add(each);
+            }
+            
+            JSONObject resultJo = new JSONObject();
+            resultJo.put("respCode", "0000");
+            resultJo.put("resultJa", resultJa);
+            return resultJo;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo;
+        }
+    }
+    
+    private JSONObject mtQueryOrder(String param, String shopId) {
+        
+        JSONObject paramJo = JSON.parseObject(param);
+        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                .getBean("mongoTemplate");
+        
+        DBCollection dbc = mt.getCollection("dn_cookies");
+        BasicDBObject cond1 = new BasicDBObject();
+        cond1.put("userName", shopId);
+        DBCursor cursor = dbc.find(cond1);
+        
+        String cookies = null;
+        
+        while (cursor.hasNext()) {
+            DBObject dbo = cursor.next();
+            cookies = dbo.get("cookies").toString();
+        }
+        
+        String queryStr = "?getNewVo=1&wmOrderPayType=2&wmOrderStatus=-2&sortField=1&lastLabel=&nextLabel=&_token="
+                + getValue(cookies, "token");
+        
+        if (paramJo.containsKey("beginTime")) {
+            queryStr = queryStr + "&startDate="
+                    + paramJo.getString("beginTime") + "&endDate="
+                    + paramJo.getString("beginTime");
+        }
+        
+        String result = HttpRequest.sendGet2(UrlUtil.mtQuery + queryStr,
+                cookies);
+        
+        if (JsonUtil.isBlank(result)) {
+            JSONObject retJo = new JSONObject();
+            retJo.put("respCode", "9999");
+            return retJo;
+        }
+        
+        JSONObject retJo = null;
+        if (isJson(result)) {
+            retJo = JSON.parseObject(result);
+        }
+        else {
+            JSONObject respJo = new JSONObject();
+            respJo.put("respCode", "9999");
+            return respJo;
+        }
+        
+        if (JsonUtil.isBlank(retJo.get("wmOrderList"))) {
+            JSONObject respJo = new JSONObject();
+            respJo.put("respCode", "9999");
+            return respJo;
+        }
+        
+        JSONArray orderListJa = retJo.getJSONArray("wmOrderList");
+        
+        JSONArray orderList = new JSONArray();
+        JSONObject orderJo = new JSONObject();
+        
+        for (Object o : orderListJa) {
+            JSONObject jo = (JSONObject)o;
+            orderList.add(fixDatamt(jo, shopId));
+        }
+        
+        orderJo.put("respCode", "0000");
+        orderJo.put("orderList", orderList);
+        
+        return orderJo;
+    }
+    
+    private boolean isJson(String param) {
+        try {
+            JSON.parseObject(param);
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
     }
     
     private JSONObject elemQueryOrder(String param, String shopId) {
@@ -184,9 +599,15 @@ public class OrderController {
                 retJo.put("respCode", "9999");
                 return retJo;
             }
-            
-            JSONObject reJo = reJa.getJSONObject(0);
-            return fixData(reJo);
+            JSONArray retJa = new JSONArray();
+            for (Object o : reJa) {
+                JSONObject reJo = (JSONObject)o;
+                retJa.add(fixData(reJo));
+            }
+            JSONObject retJo = new JSONObject();
+            retJo.put("respCode", "0000");
+            retJo.put("retJa", retJa);
+            return retJo;
         }
         catch (Exception e) {
             JSONObject retJo = new JSONObject();
@@ -194,6 +615,89 @@ public class OrderController {
             e.printStackTrace();
             return retJo;
         }
+    }
+    
+    private String dateParse(long mesc) {
+        SimpleDateFormat dateformat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTimeInMillis(mesc);
+        return dateformat.format(gc.getTime());
+    }
+    
+    private JSONObject fixDatamt(JSONObject jo, String userName) {
+        JSONObject fixJo = new JSONObject();
+        fixJo.put("orderTime",
+                dateParse(Long.parseLong(JsonUtil.getLong(jo, "order_time")
+                        + "000")));
+        fixJo.put("orderNo", JsonUtil.getString(jo, "wm_order_id_view_str"));
+        fixJo.put("userName", JsonUtil.getString(jo, "recipient_name"));
+        fixJo.put("phone", JsonUtil.getString(jo, "recipient_phone"));
+        fixJo.put("merchantId", userName);
+        
+        if (JsonUtil.isNotBlank(jo.get("cartDetailVos"))) {
+            JSONArray dishesJa = new JSONArray();
+            for (Object o : jo.getJSONArray("cartDetailVos")) {
+                JSONObject cartDetailVosJo = (JSONObject)o;
+                if (JsonUtil.isNotBlank(cartDetailVosJo.get("details"))) {
+                    JSONArray detailsJa = cartDetailVosJo.getJSONArray("details");
+                    for (Object detailso : detailsJa) {
+                        JSONObject detailJo = (JSONObject)detailso;
+                        JSONObject dishJo = new JSONObject();
+                        dishJo.put("dishName",
+                                JsonUtil.getString(detailJo, "food_name"));
+                        //                        dishJo.put("activityName", "特价");
+                        dishJo.put("count",
+                                JsonUtil.getString(detailJo, "count"));
+                        dishJo.put("price1", JsonUtil.getString(detailJo,
+                                "origin_food_price"));
+                        dishJo.put("price2",
+                                JsonUtil.getString(detailJo, "food_price"));
+                        dishJo.put("goods_id",
+                                JsonUtil.getString(detailJo, "wm_food_id"));
+                        dishJo.put("goods_price", JsonUtil.getString(detailJo,
+                                "origin_food_price"));
+                        dishesJa.add(dishJo);
+                    }
+                }
+            }
+            fixJo.put("dishes", dishesJa);
+        }
+        fixJo.put("boxPrice", JsonUtil.getString(jo, "boxPriceTotal"));
+        fixJo.put("orderPrice", JsonUtil.getString(jo, "total_before"));
+        fixJo.put("state", "0");
+        fixJo.put("merchantName", JsonUtil.getString(jo, "poi_name"));
+        fixJo.put("platform_type", "mt");
+        fixJo.put("consignee_name", JsonUtil.getString(jo, "recipient_name"));
+        fixJo.put("consigneeAddress",
+                JsonUtil.getString(jo, "recipient_address"));
+        fixJo.put("distance", JsonUtil.getString(jo, "distance"));
+        fixJo.put("remark", JsonUtil.getString(jo, "remark"));
+        fixJo.put("shopName", JsonUtil.getString(jo, "poi_name"));
+        
+        //        boolean riderPay = JsonUtil.getBoolean(chargeJo, "riderPay");
+        //        if (riderPay) {
+        //            fixJo.put("platform_dist_charge",
+        //                    JsonUtil.getString(chargeJo, "shippingAmount"));
+        //            fixJo.put("distribution_mode", "CROWD");
+        //        }
+        //        else {
+        //            fixJo.put("merchant_dist_charge",
+        //                    JsonUtil.getString(jo, "shipping_fee"));
+        //            fixJo.put("distribution_mode", "NONE");
+        //        }
+        //        if (JsonUtil.isNotBlank(chargeJo.get("commisionDetails"))) {
+        //            fixJo.put("serviceFee",
+        //                    JsonUtil.getString(chargeJo.getJSONArray("commisionDetails")
+        //                            .getJSONObject(0),
+        //                            "chargeAmount"));
+        //        }
+        fixJo.put("activities_subsidy_bymerchant", jo.getDouble("total_before")
+                - jo.getDouble("total_after"));
+        
+        fixJo.put("orderLatestStatus",
+                JsonUtil.getString(jo, "orderLatestStatus"));
+        return fixJo;
     }
     
     private JSONObject fixData(JSONObject jo) {
@@ -289,6 +793,7 @@ public class OrderController {
         String confirmStr = confirmOrder(request, param);
         JSONObject confirmJo = JSON.parseObject(confirmStr);
         if ("9999".equals(confirmJo.getString("respCode"))) {
+            updateMongodbState(param);
             return confirmJo.toString();
         }
         
@@ -303,8 +808,40 @@ public class OrderController {
         if ("9999".equals(insertDbJo.getString("respCode"))) {
             return insertDbJo.toString();
         }
+        print();
         
         return confirmJo.toString();
+    }
+    
+    private void print() {
+        int height = 175 + 3 * 15 + 20;
+        
+        // 通俗理解就是书、文档  
+        Book book = new Book();
+        
+        // 打印格式  
+        PageFormat pf = new PageFormat();
+        pf.setOrientation(PageFormat.PORTRAIT);
+        
+        // 通过Paper设置页面的空白边距和可打印区域。必须与实际打印纸张大小相符。  
+        Paper p = new Paper();
+        p.setSize(230, height);
+        p.setImageableArea(5, -20, 230, height + 20);
+        pf.setPaper(p);
+        
+        // 把 PageFormat 和 Printable 添加到书中，组成一个页面  
+        book.append(new Prient(), pf);
+        
+        // 获取打印服务对象  
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPageable(book);
+        try {
+            job.print();
+        }
+        catch (PrinterException e) {
+            e.printStackTrace();
+            log.info("================打印出现异常");
+        }
     }
     
     private JSONObject updateMongodbState(String param) {
@@ -352,10 +889,7 @@ public class OrderController {
         }
     }
     
-    @RequestMapping("/confirmOrder")
-    public @ResponseBody String confirmOrder(HttpServletRequest request,
-            @RequestBody String param) {
-        JSONObject paramJo = JSON.parseObject(param);
+    private String elemConfireOrder(JSONObject paramJo) {
         MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
                 .getBean("mongoTemplate");
         
@@ -405,8 +939,142 @@ public class OrderController {
             reJo.put("respDesc", e.getMessage());
             return reJo.toString();
         }
-        
     }
+    
+    private String mtConfirmOrder(JSONObject paramJo) {
+        
+        try {
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            
+            DBCollection dbc = mt.getCollection("dn_cookies");
+            BasicDBObject cond1 = new BasicDBObject();
+            cond1.put("userName", JsonUtil.getString(paramJo, "merchantId"));
+            DBCursor cursor = dbc.find(cond1);
+            
+            String cookies = null;
+            
+            while (cursor.hasNext()) {
+                DBObject dbo = cursor.next();
+                cookies = dbo.get("cookies").toString();
+            }
+            
+            Map<String, String> retMap = HttpRequest.sendPost1(UrlUtil.mtconfirm,
+                    "wmPoiId=" + getValue(cookies, "wmPoiId") + "&orderId="
+                            + JsonUtil.getString(paramJo, "orderNo")
+                            + "&acctId=" + getValue(cookies, "acctId")
+                            + "&appType=3&token=" + getValue(cookies, "token")
+                            + "&isPrint=0&isAutoAccept=0&csrfToken=",
+                    cookies);
+            log.info("--------------mtConfirmOrder--result-----------------"
+                    + retMap);
+            String result = retMap.get("result");
+            JSONObject resultJo = JSON.parseObject(result);
+            if (JsonUtil.isNotBlank(resultJo.get("data"))) {
+                if (resultJo.containsKey("code")
+                        && "0".equals(resultJo.getString("code"))) {
+                    JSONObject retJo = new JSONObject();
+                    retJo.put("respCode", "0000");
+                    retJo.put("respDesc", "接单成功！");
+                    return retJo.toString();
+                }
+            }
+            
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", "接单失败！");
+            return reJo.toString();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo.toString();
+        }
+    }
+    
+    private String bdwmConfirmOrder(JSONObject paramJo) {
+        try {
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            
+            DBCollection dbc = mt.getCollection("dn_bdloginInfo");
+            BasicDBObject cond1 = new BasicDBObject();
+            cond1.put("username", JsonUtil.getString(paramJo, "merchantId"));
+            DBCursor cursor = dbc.find(cond1);
+            
+            String cookies = null;
+            
+            while (cursor.hasNext()) {
+                DBObject dbo = cursor.next();
+                cookies = dbo.get("loginInfo").toString();
+            }
+            
+            Map<String, String> retMap = HttpRequest.sendPost1(UrlUtil.bdwmconfirm,
+                    "order_id=" + JsonUtil.getString(paramJo, "orderNo")
+                            + "&pc_ver=4.1.0&from=pc-ke",
+                    cookies);
+            log.info("--------------bdwmConfirmOrder--result-----------------"
+                    + retMap);
+            String result = retMap.get("result");
+            JSONObject resultJo = JSON.parseObject(result);
+            if (0 == resultJo.getInteger("errno")) {
+                JSONObject retJo = new JSONObject();
+                retJo.put("respCode", "0000");
+                retJo.put("respDesc", "接单成功！");
+                return retJo.toString();
+            }
+            
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", "接单失败！");
+            return reJo.toString();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo.toString();
+        }
+    }
+    
+    private String getValue(String cookies, String name) {
+        
+        if (JsonUtil.isBlank(cookies)) {
+            return "";
+        }
+        
+        String[] cookiesArr = cookies.split(";");
+        
+        for (String each : cookiesArr) {
+            if (each.contains(name)) {
+                return each.replace(name + "=", "");
+            }
+        }
+        
+        return null;
+    }
+    
+    @RequestMapping("/confirmOrder")
+    public @ResponseBody String confirmOrder(HttpServletRequest request,
+            @RequestBody String param) {
+        JSONObject paramJo = JSON.parseObject(param);
+        
+        if ("elm".equals(paramJo.getString("platform_type"))) {
+            return elemConfireOrder(paramJo);
+        }
+        else if ("mt".equals(paramJo.getString("platform_type"))) {
+            return mtConfirmOrder(paramJo);
+        }
+        else if ("bdwm".equals(paramJo.getString("platform_type"))) {
+            return bdwmConfirmOrder(paramJo);
+        }
+        
+        return null;
+    }
+    
     //    @RequestMapping("/testOrder")
     //    public @ResponseBody String test(HttpServletRequest request,
     //            HttpServletResponse response) {
@@ -619,4 +1287,28 @@ public class OrderController {
     //        
     //        return jo.toString();
     //    }
+    public static void main(String[] args) {
+        File directory = new File("");
+        try {
+            log.info(directory.getCanonicalPath());
+            //            System.out.println(Thread.currentThread()
+            //                    .getContextClassLoader()
+            //                    .getResource(""));
+            //            System.out.println(OrderController.class.getClassLoader()
+            //                    .getResource(""));
+            //            System.out.println(ClassLoader.getSystemResource(""));
+            System.out.println(OrderController.class.getResource("").getFile());
+            FileReader reader = new FileReader(
+                    OrderController.class.getResource("").getFile()
+                            + File.separator + "code.js");
+            //            System.out.println(OrderController.class.getResource("/"));//Class文件所在路径 
+            //            System.out.println(new File("/").getAbsolutePath());
+            //            System.out.println(System.getProperty("user.dir"));
+            System.out.print(reader);
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

@@ -5,7 +5,7 @@ $(function() {
 				acceptURL : "order/loadOrder",
 				cancelURL : "order/loadOrder"
 			});
-			var webSocket = new WebSocket('ws://localhost:8080/merchant-system/push');
+			var webSocket = new WebSocket('ws://180.76.134.65:8090/merchant-system/push');
 
 			webSocket.onerror = function(event) {
 				onError(event);

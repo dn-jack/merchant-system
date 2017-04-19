@@ -28,7 +28,7 @@
                     <div class="user-info">
                         <div class="btn-group">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            james <span class="caret"></span>
+                            <span id="userName">james</span> <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu">
                             <li><a href="#">退出</a></li>
@@ -117,11 +117,11 @@
                 </div>
                 <div class="other-cost">
                 		<ul>
-                			<li class="row">
+                			<li class="row" data-if="boxPrice">
                 				<div class="col-md-6">餐盒费</div>
                 				<div class="col-md-6">{boxPrice}</div>
                 			</li>
-                			<li class="row">
+                			<li class="row" data-if="distributionPrice">
                 				<div class="col-md-6">配送费</div>
                 				<div class="col-md-6">{distributionPrice}</div>
                 			</li>
@@ -129,11 +129,11 @@
                 </div>
                 <div class="active-cost">
                 		<ul>
-                			<li class="row">
+                			<li class="row" data-if="discount">
                 				<div class="col-md-6">立减优惠</div>
                 				<div class="col-md-6">-{discount}</div>
                 			</li>
-                			<li class="row">
+                			<li class="row" data-if="hongbao">
                 				<div class="col-md-6">红包抵扣</div>
                 				<div class="col-md-6">-{hongbao}</div>
                 			</li>
@@ -157,7 +157,7 @@
         <script id="detail" type="text/template">
         	<li class="row">
 				<div class="col-md-3">
-					<h6>{dishName}</h6> <span class="label label-default">{activityName}</span>
+					<h6>{dishName}</h6> <span class="label label-default" data-if="activityName">{activityName}</span>
 				</div>
 				<div class="col-md-3">
 					×{count}

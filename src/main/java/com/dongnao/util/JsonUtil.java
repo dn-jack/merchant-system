@@ -65,6 +65,24 @@ public class JsonUtil {
         return jo.getString(name);
     }
     
+    public static Long getLong(JSONObject jo, String name) {
+        
+        if (!jo.containsKey(name)) {
+            return 0L;
+        }
+        
+        return jo.getLong(name);
+    }
+    
+    public static Integer getInteger(JSONObject jo, String name) {
+        
+        if (!jo.containsKey(name)) {
+            return 0;
+        }
+        
+        return jo.getInteger(name);
+    }
+    
     public static BigDecimal getBigDecimal(JSONObject jo, String name) {
         
         if (!jo.containsKey(name)) {

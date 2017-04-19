@@ -11,7 +11,7 @@
 		// respDesc : "",//最后一次处理订单信息
 		orders : [],// 目前已经有了的订单
 		cancelURL : "json/cancel-order.json",// 取消订单URL
-		acceptURL : "json/accept-order.json",//"order/loadOrder",// 接受订单URL
+		acceptURL : "order/confirmOrder",//"order/loadOrder",// 接受订单URL
 		saveOrderURL : "order/orderInsertDb",// 订单数据入库
 		confirmOrderURL : "order/confirmOrder",
 		animateIn : "fadeInDown",// zoomIn rollIn rotateIn bounceIn fadeInUp
@@ -79,12 +79,12 @@
 		genOrder : function(order, temp, tempDetail) {
 			var _temp = temp;
 			var _details = "";
-			var _regex = /(\{(.+?)\})/g;
-			while(_regex.test(_temp)){
+			var _regex = /(\{(.+?)\})/;
+			while(_regex.exec(_temp)){
 				_temp = _temp.replace(RegExp.$1, order[RegExp.$2]);
 			}
-			_regex = /(#\[(.+?)\])/g;
-			while(_regex.test(_temp)){
+			_regex = /(#\[(.+?)\])/;
+			while(_regex.exec(_temp)){
 				var dict = eval(RegExp.$2);
 				_temp = _temp.replace(RegExp.$1,dict);
 			}
@@ -101,6 +101,11 @@
 			$order.addClass(this.opt.animateIn + " animated");
 			$order.data("bind", order);
 			this.opt.orders.push(order.orderNo);
+			$("[data-if]",$order).each(function(){
+				if(!order[$(this).data("if")]){
+					$(this).remove();
+				}
+			});
 			return $order;
 		},
 		hasWarnOrders : function() {
@@ -193,6 +198,9 @@
 /* order list end */
 
 $(function() {
+	
+	$("#userName").html(localStorage.getItem("username"));
+	
 	$(".data-list").noDataDisplay({
 				show : true
 			});

@@ -28,7 +28,7 @@
                     <div class="user-info">
                         <div class="btn-group">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            james <span class="caret"></span>
+                            <span id="userName">james</span> <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu">
                             <li><a href="#">退出</a></li>
@@ -97,19 +97,20 @@
                                                 </tr>
                                                 <tr class="date-list">
                                                     <td>日期</td>
+                                                    <!-- 
                                                     <td>
                                                         <input type="radio" name="iCheck1" checked id="radio-4">
                                                         <label for="radio-4">近两日</label>
-                                                    </td>
+                                                    </td> -->
                                                     <td class="date">
-                                                        <input type="radio" name="iCheck1" id="radio-5">
+                                                        <input type="radio" name="iCheck1" id="radio-5" value="other">
                                                         <label for="radio-5">日期</label>
                                                         <div class="date-form" style="visibility: hidden;">
                                                         	<input id="datetimepicker" data-date-format="yyyy-mm-dd" placeholder="时间" class="" type="" name="" id="" value="" />
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr>
+                                                <!-- <tr>
                                                     <td>订单状态</td>
                                                     <td>
                                                         <input type="radio" name="orderLatestStatus" checked id="radio-6" value="all">
@@ -127,7 +128,7 @@
                                                         <input type="radio" name="orderLatestStatus" id="radio-8" value="cancel">
                                                         <label for="radio-8">已取消</label>
                                                     </td>
-                                                </tr>
+                                                </tr> -->
                                             </table>
                                     </div>
                                     <div class="order-search data-list" id="order-search">
@@ -151,19 +152,15 @@
                             </nav>
                             <div class="col-md-3">
                                 <div class="panel">
-                                    <h6>出餐汇总-今日</h6>
+                                    <h6>今日订单概况</h6>
                                     <ul>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                        <li>已接订单：20笔</li>
+                                        <li>今日营业总额：200000元</li>
                                     </ul>
-                                    <h6>出餐汇总-昨日</h6>
+                                    <h6>昨日订单概况</h6>
                                     <ul>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
-                                        <li>怡宝矿泉水 <span>×1</span></li>
+                                      <li>已接订单：20笔</li>
+                                      <li>今日营业总额：200000元</li>
                                     </ul>
                                 </div>
                             </div>
@@ -180,11 +177,11 @@
                         <p>下单时间: {orderTime}</p>
                         <p>订单号:   {orderNo}</p>
                     </div>
-                    <h3>{orderLatestStatus}</h3>
+                    <!--<h3>{orderLatestStatus}</h3>-->
                 </div>
                 <div class="user-infor">
-                    <p>{userName}</p>
-                    <p>{shopName}<b class="platform-{platformType}">【#[Utils.getDict('PLATFORM','{platformType}')]】</b></p>
+                    <p>{userName} <span>{phone}</span></p>
+                    <p>{shopName}<b class="platform-{platform_type}">【#[Utils.getDict('PLATFORM','{platform_type}')]】</b></p>
                 </div>
                 <div class="checked-menu" style="display: none;">
                     <table class="menu-list"></table>
@@ -206,7 +203,11 @@
                 </div>
                 <div class="handle">
                     <button type="button" name="button">打印订单</button>
-                    <button type="button" dropDown-handle name="button"><i class="iconfont">&#xe61b;</i></button>
+                    <button type="button" class="copy-order">复制订单</button>
+                    <input type="text" class="content" value="copyContent">
+                    <button type="button" dropDown-handle name="button">
+                      <i class="iconfont">&#xe61b;</i>
+                    </button>
                 </div>
             </li>
         </script>

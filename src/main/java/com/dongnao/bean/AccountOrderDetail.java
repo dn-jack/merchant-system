@@ -219,6 +219,26 @@ public class AccountOrderDetail {
      **/
     private BigDecimal orderSaleRate;
     
+    private BigDecimal orginPrice;
+    
+    private String consigneeAddress;
+    
+    public String getConsigneeAddress() {
+        return consigneeAddress;
+    }
+    
+    public void setConsigneeAddress(String consigneeAddress) {
+        this.consigneeAddress = consigneeAddress;
+    }
+    
+    public BigDecimal getOrginPrice() {
+        return orginPrice;
+    }
+    
+    public void setOrginPrice(BigDecimal orginPrice) {
+        this.orginPrice = orginPrice;
+    }
+    
     public String getBookedTime() {
         return bookedTime;
     }

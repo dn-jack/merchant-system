@@ -212,5 +212,6 @@
 /*loading end*/
 
 $(function(){
+	$("#userName").html(localStorage.getItem("username"));
     $("#menu").sidenav();
 });

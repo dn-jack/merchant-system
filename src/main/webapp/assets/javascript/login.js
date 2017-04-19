@@ -1,4 +1,12 @@
 $(function() {
+	init();
+	$('.look').click(function() {
+		var token = ajax("order/getToten", "");
+		var src = url + '?token=' + token + '&t=' + new Date()
+				+ '&color=3c78d8';
+		$('#imgObj').attr('src', src);
+	});
+
 	/*表单验证*/
 	$('#login').bootstrapValidator().on('success.form.bv', function(e) {
         e.preventDefault();
@@ -6,11 +14,19 @@ $(function() {
 		var action = form.action;
 		var usename = $('[name=username]',this).val();
 		var passwords = $('[name=password]',this).val();
+		var code = $('#verification').val();
 		//		?username="+ usename +"password="+ passwords+"
 		var $loginMask = $('#mask');
 		var $loginLoding = $('#loading');
 		var $loginSuccess = $('#success');
 		var $loginFail = $('#fail');
+		
+//		var data = isRightCode();
+//		if(data.respCode == '9999') {
+//			alert("验证码错误！");
+//			return;
+//		}
+		
 		$loginMask.show();
 //		$.getJSON("json/login.json",function(data){
 //			Utils.timeout(function(){
@@ -45,12 +61,13 @@ $(function() {
 		
 					$.ajax({
 						type : "post",
-						url : 'http://localhost:8080/merchant-system/order/login',
-						data : JSON.stringify({userName:usename,password:passwords}),
+						url : 'order/login',
+						data : JSON.stringify({userName:usename,password:passwords,code:code}),
 						cache : false,
 						dataType : "json",
 						contentType : false,
 						error : function() {
+							init();
 							alert("登录失败！");
 							$loginLoding.hide();
 							$loginFail.show();
@@ -112,6 +129,8 @@ $(function() {
 									window.location = action;
 								});
 							} else {
+								init();
+								alert(response.respMsg);
 								$(form).data('bootstrapValidator').resetForm(true);
 								$loginLoding.hide();
 								$loginFail.show();
@@ -135,3 +154,92 @@ $(function() {
 		document.getElementById("check").checked=true;
 	}
 });
+
+function changeImg(){     
+    var imgSrc = $("#imgObj");     
+    var src = imgSrc.attr("src");     
+    imgSrc.attr("src",chgUrl(src));     
+}     
+//时间戳     
+//为了使每次生成图片不一致，即不让浏览器读缓存，所以需要加上时间戳     
+function chgUrl(url){     
+    var timestamp = (new Date()).valueOf();     
+    urlurl = url.substring(0,17);     
+    if((url.indexOf("&")>=0)){     
+        urlurl = url + "×tamp=" + timestamp;     
+    }else{     
+        urlurl = url + "?timestamp=" + timestamp;     
+    }     
+    return url;     
+}     
+function isRightCode(){     
+    var code = $("#verification").val();  
+    var data;
+    $.ajax({     
+        type:"POST",     
+        async:false,
+        url:"common/validateCode",     
+        data:JSON.stringify({code : code}), 
+        dataType: "json",
+        success:function(data) {
+        	data = data;
+        }
+    }); 
+    return data;
+}   
+
+var url = 'https://wmpass.baidu.com/wmpass/openservice/imgcaptcha';
+var a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+function h(r) {
+	if (r) {
+		r = c(r);
+		var e = new RegExp("=", "g");
+		return r = r.replace(e, ""), r = r.split("").reverse().join("")
+	}
+}
+
+function c(r) {
+	var e, t, o, c, i, h;
+	for (o = r.length, t = 0, e = ""; o > t;) {
+		if (c = 255 & r.charCodeAt(t++), t == o) {
+			e += a.charAt(c >> 2), e += a.charAt((3 & c) << 4), e += "==";
+			break
+		}
+		if (i = r.charCodeAt(t++), t == o) {
+			e += a.charAt(c >> 2), e += a.charAt((3 & c) << 4 | (240 & i) >> 4), e += a
+					.charAt((15 & i) << 2), e += "=";
+			break
+		}
+		h = r.charCodeAt(t++), e += a.charAt(c >> 2), e += a
+				.charAt((3 & c) << 4 | (240 & i) >> 4), e += a
+				.charAt((15 & i) << 2 | (192 & h) >> 6), e += a.charAt(63 & h)
+	}
+	return e
+}
+
+function init() {
+	var token = ajax("order/getToten", "");
+	var src = url + '?token=' + token + '&t=' + new Date() + '&color=3c78d8';
+	$('#imgObj').attr('src', src);
+}
+function ajax(url, param) {
+	var data;
+	$.ajax({
+				type : "post",
+				url : url,
+				data : JSON.stringify(param),
+				cache : false,
+				async : false,
+				dataType : "json",
+				contentType : "application/json; charset=utf-8",
+				error : function() {
+
+				},
+				success : function(response) {
+					if (response.respCode == '0000') {
+						data = response.token;
+					}
+				}
+			});
+	return data;
+}

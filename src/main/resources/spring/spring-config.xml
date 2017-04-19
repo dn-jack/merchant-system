@@ -8,17 +8,15 @@
 	default-lazy-init="true">
 	
 	<context:annotation-config />
-	<!-- 加载系统properties文件配置 -->
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
 				<!--<value>classpath:dubbo.properties</value>-->
-				<value>classpath:config.properties</value>
+				<value>classpath:config/config.properties</value>
 				<value>classpath:mongodb/mongodb.properties</value>
 			</list>
 		</property>
 	</bean>
-
 	<!--<import resource="spring-config-dubbo-consumer.xml" />-->
 	<!--<import resource="spring-config-gtm.xml" />-->
 	<import resource="classpath:mongodb/mongodb.xml"/>
