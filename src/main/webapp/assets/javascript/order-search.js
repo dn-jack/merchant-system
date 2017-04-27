@@ -125,6 +125,8 @@
 			return this.$ool.children("li").size() > 0;
 		},
 		emptyOrders : function(){
+			console.log(this.$ool.find(".print"))
+			this.$ool.find(".print").unbind("click");
 			this.$ool.empty();
 		},
 		load : function(){
@@ -161,6 +163,13 @@
 					function() {
 						that.$ool.data("nodata-display").hide(true);
 					});
+			this.$ool.on("click", ".handle .print", function(){
+				var $order = $(this).parents("li");
+				var bind = $order.data("bind");
+				console.log(bind);
+				
+				//javascript:cyz.funAndroid(JSON.stringify(bind));
+			});
 		}
 	};
 
@@ -236,3 +245,43 @@ function getDate(time){
   }
 	return date.getFullYear() + seperator1 + month + seperator1 + strDate;
 }
+
+
+function getDate(time){
+	var date = time?new Date(time):new Date();
+  var seperator1 = "-";
+  var month = date.getMonth() + 1;
+  var strDate = date.getDate();
+  if (month >= 1 && month <= 9) {
+      month = "0" + month;
+  }
+  if (strDate >= 0 && strDate <= 9) {
+      strDate = "0" + strDate;
+  }
+	return date.getFullYear() + seperator1 + month + seperator1 + strDate;
+}
+
+
+//移动端获取当天时间
+function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+           
+    return currentdate;
+}
+$(".mobile-date").val(getNowFormatDate());
+
+$(".mobile-date").change(function(){
+	orderList.addQuery('beginTime', $(".mobile-date").val());
+	orderList.load();
+})

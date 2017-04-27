@@ -36,6 +36,20 @@
 									)
 	</insert>
 	
+	<insert id="saveDishess" parameterType="com.dongnao.bean.AccountSaleGoods">
+		insert into account_sale_goods (
+		<include refid="Base_Column_List" />)
+		<foreach collection="list" item="item" index="index" separator="union all">
+			select #{item.storeId,jdbcType=VARCHAR}
+														,#{item.storeName,jdbcType=VARCHAR}
+														,#{item.orderNo,jdbcType=VARCHAR}
+														,#{item.goodName,jdbcType=VARCHAR}
+														,#{item.goodUnitPrice,jdbcType=DECIMAL}
+														,#{item.goodNum,jdbcType=INTEGER}
+														,#{item.platformType,jdbcType=VARCHAR} from dual
+		</foreach>
+	</insert>
+	
 	<insert id="saveOrder" parameterType="com.dongnao.bean.AccountOrderDetail">
   	
 	insert into account_order_detail(
@@ -86,7 +100,67 @@
 			<if test="username != null and username != ''" >
 				and store_id=#{username,jdbcType=VARCHAR}
 			</if>
+			<if test="orderTime != null and orderTime != ''" >
+				and order_time >= str_to_date(#{orderTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="platformType != null and platformType != ''" >
+				and platform_type = #{platformType,jdbcType=VARCHAR}
+			</if>
 		</trim>
 	</select>
+	
+	<insert id="saveOrders" parameterType="com.dongnao.bean.AccountOrderDetail">
+		insert into account_order_detail(
+		<if test="createDate != null and createDate != ''">
+	create_date,
+		</if>
+	store_id,store_ELM_id,store_name,order_type,
+		<if test="orderTime != null and orderTime != ''">
+	order_time,
+		</if>
+	order_no,orgin_price,meal_fee,merchant_activities_subsidies,platform_activities_subsidies,service_rate,service_charge,
+	platform_dist_charge,settlement_amount,distribution_mode,remark,platform_type,
+		<if test="bookedTime != null and bookedTime != ''">
+	booked_time,
+		</if>
+	consignee_name,
+		<if test="activeTime != null and activeTime != ''">
+	active_time,
+		</if>
+	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr)
+	<foreach collection="list" item="item" index="index" separator="union all">
+		select <if test="createDate != null and createDate != ''">
+		str_to_date(#{item.createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),
+		</if>
+		#{item.storeId,jdbcType=VARCHAR}
+		,#{item.storeELMId,jdbcType=VARCHAR},#{item.storeName,jdbcType=VARCHAR},#{item.orderType,jdbcType=VARCHAR},
+		<if test="orderTime != null and orderTime != ''">
+		str_to_date(#{item.orderTime,jdbcType=VARCHAR},'%Y-%m-%d %T'),
+		</if>
+		#{item.orderNo,jdbcType=VARCHAR},#{item.orginPrice},#{item.mealFee},#{item.merchantActivitiesSubsidies},#{item.platformActivitiesSubsidies},#{item.serviceRate},#{item.serviceCharge}
+		,#{item.platformDistCharge},#{item.settlementAmount},#{item.distributionMode},#{item.remark},#{item.platformType},
+		<if test="bookedTime != null and bookedTime != ''">
+		#{item.bookedTime},
+		</if>
+		#{item.consigneeName},
+		<if test="activeTime != null and activeTime != ''">
+		#{item.activeTime},
+		</if>
+		#{item.activeTotal},#{item.goodsName},#{item.goodsQuality},#{item.goodsId},#{item.goodsPrice},#{item.consigneeAddress,jdbcType=VARCHAR} from dual
+	</foreach>
+	</insert>
+	<!--
+	<insert id="insertData"
+		parameterType="com.soshare.product.activitymanage.model.ActivityReleaseRelModel">
+			insert into PD_ACTIVITY_RELEASE_REL (ACTIVITY_ID, AREA_LEVEL, AREA_CODE, 
+		      STATE, START_DATE, END_DATE, 
+		      UPDATE_STAFF_ID, UPDATE_DEPART_ID, UPDATE_DATE)
+		      <foreach collection="list" item="item" index="index" separator="union all">
+		    select #{item.activityId,jdbcType=DECIMAL}, #{item.areaLevel,jdbcType=CHAR}, #{item.areaCode,jdbcType=VARCHAR}, 
+		      #{item.state,jdbcType=CHAR}, TO_DATE(#{item.startDate},'yyyy-mm-dd'), TO_DATE(#{item.endDate},'yyyy-mm-dd'), 
+		      #{item.updateStaffId,jdbcType=VARCHAR}, #{item.updateDepartId,jdbcType=VARCHAR},sysdate from dual
+		</foreach>
+	</insert>
+	-->
 	
 </mapper>

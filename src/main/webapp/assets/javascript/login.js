@@ -1,7 +1,11 @@
+var uuid = '';
 $(function() {
 	init();
 	$('.look').click(function() {
-		var token = ajax("order/getToten", "");
+		var param = {uuid:uuid};
+		var data = ajax("order/getToten", param);
+		var token = data.token;
+		uuid = data.uuid;
 		var src = url + '?token=' + token + '&t=' + new Date()
 				+ '&color=3c78d8';
 		$('#imgObj').attr('src', src);
@@ -14,7 +18,7 @@ $(function() {
 		var action = form.action;
 		var usename = $('[name=username]',this).val();
 		var passwords = $('[name=password]',this).val();
-		var code = $('#verification').val();
+		var code = $('[name=verification]',this).val();
 		//		?username="+ usename +"password="+ passwords+"
 		var $loginMask = $('#mask');
 		var $loginLoding = $('#loading');
@@ -62,7 +66,7 @@ $(function() {
 					$.ajax({
 						type : "post",
 						url : 'order/login',
-						data : JSON.stringify({userName:usename,password:passwords,code:code}),
+						data : JSON.stringify({userName:usename,password:passwords,code:code,uuid:uuid}),
 						cache : false,
 						dataType : "json",
 						contentType : false,
@@ -148,7 +152,7 @@ $(function() {
 		//获取cookie的值
 		var username = localStorage.getItem("username");
 		var passwords = localStorage.getItem("username");
-	　  //将获取的值填充入输入框中
+		//将获取的值填充入输入框中
 		$('[name=username]').val(username);
 		$('[name=password]').val(passwords);
 		document.getElementById("check").checked=true;
@@ -203,12 +207,12 @@ function c(r) {
 	for (o = r.length, t = 0, e = ""; o > t;) {
 		if (c = 255 & r.charCodeAt(t++), t == o) {
 			e += a.charAt(c >> 2), e += a.charAt((3 & c) << 4), e += "==";
-			break
+			break;
 		}
 		if (i = r.charCodeAt(t++), t == o) {
 			e += a.charAt(c >> 2), e += a.charAt((3 & c) << 4 | (240 & i) >> 4), e += a
 					.charAt((15 & i) << 2), e += "=";
-			break
+			break;
 		}
 		h = r.charCodeAt(t++), e += a.charAt(c >> 2), e += a
 				.charAt((3 & c) << 4 | (240 & i) >> 4), e += a
@@ -218,7 +222,10 @@ function c(r) {
 }
 
 function init() {
-	var token = ajax("order/getToten", "");
+	var param = {uuid:uuid};
+	var data = ajax("order/getToten", param);
+	var token = data.token;
+	uuid = data.uuid;
 	var src = url + '?token=' + token + '&t=' + new Date() + '&color=3c78d8';
 	$('#imgObj').attr('src', src);
 }
@@ -237,7 +244,7 @@ function ajax(url, param) {
 				},
 				success : function(response) {
 					if (response.respCode == '0000') {
-						data = response.token;
+						data = response;
 					}
 				}
 			});

@@ -11,7 +11,7 @@
 		// respDesc : "",//最后一次处理订单信息
 		orders : [],// 目前已经有了的订单
 		cancelURL : "json/cancel-order.json",// 取消订单URL
-		acceptURL : "order/confirmOrder",//"order/loadOrder",// 接受订单URL
+		acceptURL : "order/loadOrder",// 接受订单URL
 		saveOrderURL : "order/orderInsertDb",// 订单数据入库
 		confirmOrderURL : "order/confirmOrder",
 		animateIn : "fadeInDown",// zoomIn rollIn rotateIn bounceIn fadeInUp
@@ -167,6 +167,7 @@
 					function() {
 						var $order = $(this).parents(".order-bind:first");
 						var bind = $order.data("bind");
+						bind.channelType = 'PC';
 						$order.removeClass(that.opt.animateIn)
 							.addClass(that.opt.animateOut + ' animated')
 							.one('webkitAnimationEnd', function() {
@@ -174,14 +175,15 @@
 								if (!that.hasWarnOrders()) {
 									that.$wol.data("nodata-display").show();
 								}
-								// 修改mongodb订单状态
+								
+//								// 修改mongodb订单状态
 								that.postPromise(that.opt.acceptURL, /*{
 											"merchantId" : bind.merchantId,
 											"orderNo" : bind.orderNo,
 											"platformType" : bind.platform_type
 										}*/bind, function(res) {
 											if(res.respCode == '0000') {
-												alert("接单成功！");
+												alert('接单成功！');
 											} else {
 												alert("接单失败！" + res.respDesc);
 											}

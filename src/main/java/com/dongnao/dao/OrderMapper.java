@@ -12,7 +12,11 @@ import com.dongnao.bean.AccountSaleGoods;
 public interface OrderMapper {
     int saveOrder(AccountOrderDetail detail);
     
+    int saveOrders(List<AccountOrderDetail> details);
+    
     List<Map> queryOrder(Map param);
     
     int saveDishes(AccountSaleGoods goods);
+    
+    int saveDishess(List<AccountSaleGoods> goods);
 }

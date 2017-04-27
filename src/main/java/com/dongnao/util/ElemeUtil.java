@@ -3,6 +3,7 @@ package com.dongnao.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class ElemeUtil {
@@ -15,6 +16,8 @@ public class ElemeUtil {
         orderFilterMap.put("complete", "ORDER_QUERY_PROCESSED_V2");
         orderFilterMap.put("cancel", "ORDER_QUERY_PROCESSED_INVALID");
     }
+    
+    public static String loginurl = "https://app-api.shop.ele.me/arena/invoke/?method=LoginService.loginByUsername";
     
     public static String queryOrderurl = "https://app-api.shop.ele.me/nevermore/invoke/?method=OrderService.queryOrder";
     
@@ -56,6 +59,25 @@ public class ElemeUtil {
         metas.put("appName", "melody");
         metas.put("appVersion", "4.4.2");
         metas.put("ksid", "OTM4NjMxOGItODkxZC00ZTllLTg1ZWMjE5OW");
+        paramJo.put("metas", metas);
+        paramJo.put("ncp", "2.0.0");
+        return paramJo;
+    }
+    
+    public static JSONObject loginJo() {
+        JSONObject paramJo = new JSONObject();
+        paramJo.put("id", "3c9691a3-39cd-4324-843b-7d6d54c270a9");
+        paramJo.put("method", "loginByUsername");
+        paramJo.put("service", "LoginService");
+        JSONObject params = new JSONObject();
+        params.put("username", "yuanchuan123");
+        params.put("password", "ycjfx0826");
+        params.put("captchaCode", "");
+        params.put("loginedSessionIds", new JSONArray());
+        paramJo.put("params", params);
+        JSONObject metas = new JSONObject();
+        metas.put("appName", "melody");
+        metas.put("appVersion", "4.4.0");
         paramJo.put("metas", metas);
         paramJo.put("ncp", "2.0.0");
         return paramJo;

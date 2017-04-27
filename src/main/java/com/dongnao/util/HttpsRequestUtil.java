@@ -23,11 +23,18 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
+
 public class HttpsRequestUtil {
     
     private static final String METHOD_POST = "POST";
     
     private static final String DEFAULT_CHARSET = "utf-8";
+    
+    private static transient Logger log = LoggerFactory.getLogger(HttpsRequestUtil.class);
     
     public static String doPost(String url, String params, String charset,
             int connectTimeout, int readTimeout) throws Exception {
@@ -38,6 +45,78 @@ public class HttpsRequestUtil {
         }
         
         return doPost(url, ctype, content, connectTimeout, readTimeout);
+    }
+    
+    public static JSONObject doPost1(String url, String params, String charset,
+            int connectTimeout, int readTimeout) throws Exception {
+        String ctype = "application/x-www-form-urlencoded;charset=" + charset;
+        byte[] content = {};
+        if (params != null) {
+            content = params.getBytes(charset);
+        }
+        
+        return doPost1(url, ctype, content, connectTimeout, readTimeout);
+    }
+    
+    public static JSONObject doPost1(String url, String ctype, byte[] content,
+            int connectTimeout, int readTimeout) throws Exception {
+        HttpsURLConnection conn = null;
+        OutputStream out = null;
+        String rsp = null;
+        JSONObject retJo = new JSONObject();
+        Map<String, List<String>> headerMap = null;
+        try {
+            try {
+                SSLContext ctx = SSLContext.getInstance("TLS");
+                ctx.init(new KeyManager[0],
+                        new TrustManager[] {new DefaultTrustManager()},
+                        new SecureRandom());
+                SSLContext.setDefault(ctx);
+                
+                conn = getConnection(new URL(url), METHOD_POST, ctype);
+                conn.setHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+                conn.setConnectTimeout(connectTimeout);
+                conn.setReadTimeout(readTimeout);
+            }
+            catch (Exception e) {
+                throw e;
+            }
+            try {
+                out = conn.getOutputStream();
+                out.write(content);
+                rsp = getResponseAsString(conn);
+                retJo.put("result", rsp);
+                headerMap = conn.getHeaderFields();
+                
+                for (String key1 : headerMap.keySet()) {
+                    log.info(key1 + "--->" + headerMap.get(key1));
+                }
+                
+                if (JsonUtil.isBlank(rsp)) {
+                    retJo.put("Location", headerMap.get("Location").get(0));
+                }
+                
+            }
+            catch (IOException e) {
+                throw e;
+            }
+            
+        }
+        finally {
+            if (out != null) {
+                out.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        
+        return retJo;
     }
     
     public static Map<String, String> bddoPost(String url, String params,

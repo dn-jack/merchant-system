@@ -6,11 +6,22 @@
     this.$el = $(element);
     this.opt = $.extend(true, {}, defaults, options);
     this.init(this);
+
   }
 
   Sidenav.prototype = {
     init: function (self) {
       self.slideTag(self);
+      this.mobileTag(self);
+    },
+    mobileTag: function(self){
+      $(".header-menu-mobile").on("click", function(){
+        $("#menu").slideToggle(100);
+        $(".mask-mobile").toggle();
+      });
+      $(".mask-mobile").on("click", function(){
+      	$(".header-menu-mobile").trigger("click");
+      })
     },
     slideTag: function(self){
         self.$el.find('li').on('click',function(){
@@ -33,9 +44,7 @@
             for(var i = 0; i<state.length; i++) {
                 state[i] = 0;
             }
-            //console.log(self.$el.find('.memMenuTitle'))
             state[$(this).index()] = 'index';
-
             localStorage.setItem("site", state);
         })
     }

@@ -5,5 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 public interface OrderService {
     String saveOrder(String param) throws Exception;
     
-    JSONObject queryOrder(String param, String username) throws Exception;
+    String saveOrders(String param) throws Exception;
+    
+    JSONObject queryOrder(String param) throws Exception;
 }

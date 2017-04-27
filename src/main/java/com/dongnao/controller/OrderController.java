@@ -15,6 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -62,7 +63,9 @@ public class OrderController {
     
     private static transient Logger log = LoggerFactory.getLogger(OrderController.class);
     
-    Map<String, String> mmm = new HashMap<String, String>();
+    Map<String, Map<String, String>> mmm = new HashMap<String, Map<String, String>>();
+    
+    Map<String, String> islogin = new HashMap<String, String>();
     
     @Autowired
     @Qualifier("mongoTemplate")
@@ -71,17 +74,186 @@ public class OrderController {
     @Autowired
     OrderService os;
     
+    /** 
+     * @Description 验证用户名和密码 
+     * @param @param request
+     * @param @param response
+     * @param @param param
+     * @param @return 参数 
+     * @return String 返回类型  
+     * @throws 
+     */
+    @RequestMapping("/validateUser")
+    public @ResponseBody String validateUser(HttpServletRequest request,
+            HttpServletResponse response, @RequestBody String param) {
+        
+        JSONObject paramJo = JSON.parseObject(param);
+        String platformType = paramJo.getString("platformType");
+        if ("elm".equals(platformType)) {
+            return elmUserLogin(paramJo);
+        }
+        else if ("mt".equals(platformType)) {
+            return mtUserLogin(paramJo);
+        }
+        return null;
+    }
+    
+    private String elmUserLogin(JSONObject param) {
+        JSONObject retJo = new JSONObject();
+        try {
+            
+            if (JsonUtil.isBlank(param.get("username"))
+                    || JsonUtil.isBlank(param.get("password"))) {
+                retJo.put("respCode", "9999");
+                retJo.put("respDesc", "验证失败，用户名或者密码不能为空！");
+                return retJo.toString();
+            }
+            
+            String username = param.getString("username");
+            String password = param.getString("password");
+            
+            if (islogin.containsKey("elm" + username)
+                    && "0000".equals(islogin.get("elm" + username))) {
+                retJo.put("respCode", "0000");
+                retJo.put("respDesc", "调用成功且登录验证成功！");
+                return retJo.toString();
+            }
+            
+            JSONObject loginJo = ElemeUtil.loginJo();
+            JSONObject paramsJo = loginJo.getJSONObject("params");
+            paramsJo.put("username", username);
+            paramsJo.put("password", password);
+            String loginRe = null;
+            
+            loginRe = HttpsRequestUtil.doPost(ElemeUtil.loginurl,
+                    loginJo.toString(),
+                    "UTF-8",
+                    300000,
+                    300000);
+            
+            log.info("---------------loginurl----------------" + loginRe);
+            
+            JSONObject loginRejo = JSON.parseObject(loginRe);
+            if (JsonUtil.isNotBlank(loginRejo.get("result"))
+                    && loginRejo.getJSONObject("result").getBoolean("succeed")) {
+                //0000已经登录验证过登录成功 9999已经登录验证过登录失败
+                islogin.put("elm" + username, "0000");
+                retJo.put("respCode", "0000");
+                retJo.put("respDesc", "调用成功且登录验证成功！");
+            }
+            else {
+                islogin.put("elm" + username, "9999");
+                retJo.put("respCode", "9999");
+                retJo.put("respDesc", "调用成功且登录验证失败！");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            retJo.put("respCode", "9999");
+            retJo.put("respDesc", "调用成功且登录验证失败！");
+        }
+        
+        return retJo.toString();
+    }
+    
+    private String mtUserLogin(JSONObject param) {
+        JSONObject retJo = new JSONObject();
+        try {
+            
+            if (JsonUtil.isBlank(param.get("username"))
+                    || JsonUtil.isBlank(param.get("password"))) {
+                retJo.put("respCode", "9999");
+                retJo.put("respDesc", "验证失败，用户名或者密码不能为空！");
+                return retJo.toString();
+            }
+            String username = param.getString("username");
+            String password = param.getString("password");
+            
+            if (islogin.containsKey("mt" + username)
+                    && "0000".equals(islogin.get("mt" + username))) {
+                retJo.put("respCode", "0000");
+                retJo.put("respDesc", "调用成功且登录验证成功！");
+                return retJo.toString();
+            }
+            
+            log.info("step1--------------------->invoke");
+            JSONObject step1Ret = step1(username, password);
+            
+            if (step1Ret.containsKey("Location")) {
+                //                log.info("step2--------------------->invoke");
+                //                Map<String, String> step2Ret = step2(step1Ret.getString("Location"));
+                //                if (step2Ret.containsKey("BSID")
+                //                        && step2Ret.containsKey("entryList")
+                //                        && step2Ret.containsKey("device_uuid")) {
+                //                    log.info("step3--------------------->invoke");
+                //                    step3(step2Ret, username);
+                //                }
+                islogin.put("mt" + username, "0000");
+                retJo.put("respCode", "0000");
+                retJo.put("respDesc", "调用成功且登录验证成功！");
+            }
+            else {
+                islogin.put("mt" + username, "9999");
+                retJo.put("respCode", "9999");
+                retJo.put("respDesc", "调用成功且登录验证失败！");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            retJo.put("respCode", "9999");
+            retJo.put("respDesc", "调用成功且登录验证失败！");
+        }
+        return retJo.toString();
+    }
+    
+    private JSONObject step1(String userName, String password) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("login=" + userName)
+                .append("&password=" + password)
+                .append("&part_key=")
+                .append("&captcha_code=")
+                .append("&captcha_v_token=")
+                .append("&sms_verify=" + 0)
+                .append("&sms_code=");
+        log.info("step1--------------------->param:" + sb.toString());
+        JSONObject ret = null;
+        try {
+            ret = HttpsRequestUtil.doPost1(UrlUtil.MT_loginurl,
+                    sb.toString(),
+                    "UTF-8",
+                    300000,
+                    300000);
+            log.info("step1--------------------->result:" + ret.toString());
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return ret;
+    }
+    
     @RequestMapping("/getToten")
     public @ResponseBody String getToten(HttpServletRequest request,
             HttpServletResponse response, @RequestBody String param) {
+        
+        if (JsonUtil.isNotBlank(param)) {
+            JSONObject paramJo = JSON.parseObject(param);
+            if (JsonUtil.isNotBlank(paramJo.get("uuid"))) {
+                mmm.remove(paramJo.get("uuid"));
+            }
+        }
+        
         Map<String, String> retStrMap = HttpRequest.bdsendGet("https://wmpass.baidu.com/wmpass/openservice/captchapair?protocal=https&callback=jQuery1110015827547668209752_1490844419324&_=1490844419343");
         
         String retStr = retStrMap.get("result");
         String cookies = retStrMap.get("cookie");
         
-        mmm.put("tokenCookie", cookies);
-        mmm.put("tracecode", retStrMap.get("tracecode"));
-        mmm.put("P3P", retStrMap.get("P3P"));
+        Map<String, String> usrToken = new HashMap<String, String>();
+        
+        usrToken.put("tokenCookie", cookies);
+        usrToken.put("tracecode", retStrMap.get("tracecode"));
+        usrToken.put("P3P", retStrMap.get("P3P"));
         
         String data = retStr.substring((retStr.indexOf("(")) + 1).replace(");",
                 "");
@@ -90,7 +262,9 @@ public class OrderController {
         JSONObject resultJo = dataJo.getJSONObject("data");
         String token = resultJo.getString("token");
         log.info("------------token------------" + token);
-        mmm.put("token", token);
+        usrToken.put("token", token);
+        String uuid = UUID.randomUUID().toString();
+        mmm.put(uuid, usrToken);
         
         HttpSession session = request.getSession();
         session.setAttribute("token", token);
@@ -101,6 +275,7 @@ public class OrderController {
         JSONObject retJo = new JSONObject();
         retJo.put("respCode", "0000");
         retJo.put("token", token);
+        retJo.put("uuid", uuid);
         return retJo.toString();
     }
     
@@ -159,6 +334,7 @@ public class OrderController {
         String code = paramJo.getString("code");
         String username = paramJo.getString("username");
         String password = paramJo.getString("password");
+        String uuid = paramJo.getString("uuid");
         log.info("-----------password----------" + password);
         String codepwd = invokeJsForPwd(password);
         HttpSession session = request.getSession();
@@ -166,18 +342,19 @@ public class OrderController {
         String tokenCookie = "";
         String tracecode = "";
         String P3P = "";
-        if (JsonUtil.isNotBlank(session.getAttribute("token"))) {
-            token = (String)session.getAttribute("token");
-        }
-        if (JsonUtil.isNotBlank(session.getAttribute("tokenCookie"))) {
-            tokenCookie = (String)session.getAttribute("tokenCookie");
-        }
-        if (JsonUtil.isNotBlank(session.getAttribute("tracecode"))) {
-            tracecode = (String)session.getAttribute("tracecode");
-        }
-        if (JsonUtil.isNotBlank(session.getAttribute("P3P"))) {
-            P3P = (String)session.getAttribute("P3P");
-        }
+        //        if (JsonUtil.isNotBlank(session.getAttribute("token"))) {
+        //            token = (String)session.getAttribute("token");
+        //        }
+        //        if (JsonUtil.isNotBlank(session.getAttribute("tokenCookie"))) {
+        //            tokenCookie = (String)session.getAttribute("tokenCookie");
+        //        }
+        //        if (JsonUtil.isNotBlank(session.getAttribute("tracecode"))) {
+        //            tracecode = (String)session.getAttribute("tracecode");
+        //        }
+        //        if (JsonUtil.isNotBlank(session.getAttribute("P3P"))) {
+        //            P3P = (String)session.getAttribute("P3P");
+        //        }
+        Map<String, String> tokenParam = mmm.get(uuid);
         
         String queryStr = "redirect_url=https%253A%252F%252Fwmcrm.baidu.com%252F&return_url=https%253A%252F%252Fwmcrm.baidu.com%252Fcrm%252Fsetwmstoken&type=1&channel=pc&account="
                 + username
@@ -185,7 +362,7 @@ public class OrderController {
                 + codepwd
                 + "&captcha="
                 + code
-                + "&token=" + token;
+                + "&token=" + tokenParam.get("token");
         Map<String, String> retStr = null;
         String queryOrderCookie = "";
         
@@ -196,9 +373,9 @@ public class OrderController {
                     "UTF-8",
                     300000,
                     300000,
-                    tokenCookie,
-                    tracecode,
-                    P3P);
+                    tokenParam.get("tokenCookie"),
+                    tokenParam.get("tracecode"),
+                    tokenParam.get("P3P"));
             log.info(retStr.get("cookie"));
             log.info(retStr.get("result"));
             
@@ -265,11 +442,13 @@ public class OrderController {
             if (baiduMap.entrySet().size() > 0) {
                 
                 String code = paramJo.getString("code");
+                String uuid = paramJo.getString("uuid");
                 for (Map.Entry<String, String> entry : baiduMap.entrySet()) {
                     JSONObject entryJo = new JSONObject();
                     entryJo.put("username", entry.getKey());
                     entryJo.put("password", entry.getValue());
                     entryJo.put("code", code);
+                    entryJo.put("uuid", uuid);
                     String loginInfo = bdlogin(request, entryJo.toString());
                     JSONObject loginJo = JSON.parseObject(loginInfo);
                     if ("0000".equals(loginJo.getString("respCode"))) {
@@ -356,11 +535,10 @@ public class OrderController {
                 for (String shopId : elemshopIdsList) {
                     JSONObject queryJo = elemQueryOrder(param, shopId);
                     if ("0000".equals(queryJo.getString("respCode"))) {
-                        JSONArray ja = queryJo.getJSONArray("retJa");
+                        JSONArray ja = queryJo.getJSONArray("resultJa");
                         
                         for (Object oo : ja) {
-                            JSONObject jo = (JSONObject)oo;
-                            orderJa.add(jo);
+                            orderJa.add(oo);
                         }
                     }
                 }
@@ -372,11 +550,10 @@ public class OrderController {
                 for (String shopId : mtshopIdsList) {
                     JSONObject queryJo = mtQueryOrder(param, shopId);
                     if ("0000".equals(queryJo.getString("respCode"))) {
-                        JSONArray ja = queryJo.getJSONArray("orderList");
+                        JSONArray ja = queryJo.getJSONArray("resultJa");
                         
                         for (Object oo : ja) {
-                            JSONObject jo = (JSONObject)oo;
-                            orderJa.add(jo);
+                            orderJa.add(oo);
                         }
                     }
                 }
@@ -444,7 +621,7 @@ public class OrderController {
             DBCollection dbc = mt.getCollection("dn_order");
             DBCursor cursor = dbc.find(cond3);
             JSONArray resultJa = new JSONArray();
-            if (cursor.hasNext()) {
+            while (cursor.hasNext()) {
                 DBObject each = cursor.next();
                 each.put("shopName", each.get("merchantName"));
                 each.put("platformType", each.get("platform_type"));
@@ -466,72 +643,108 @@ public class OrderController {
     }
     
     private JSONObject mtQueryOrder(String param, String shopId) {
-        
-        JSONObject paramJo = JSON.parseObject(param);
-        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
-                .getBean("mongoTemplate");
-        
-        DBCollection dbc = mt.getCollection("dn_cookies");
-        BasicDBObject cond1 = new BasicDBObject();
-        cond1.put("userName", shopId);
-        DBCursor cursor = dbc.find(cond1);
-        
-        String cookies = null;
-        
-        while (cursor.hasNext()) {
-            DBObject dbo = cursor.next();
-            cookies = dbo.get("cookies").toString();
+        try {
+            JSONObject paramJo = JSON.parseObject(param);
+            BasicDBObject cond3 = new BasicDBObject();
+            if (paramJo.containsKey("beginTime")) {
+                BasicDBObject cond1 = new BasicDBObject();
+                cond1.put("$gt", paramJo.getString("beginTime"));
+                cond3.put("orderTime", cond1);
+            }
+            cond3.put("merchantId", shopId);
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            DBCollection dbc = mt.getCollection("dn_order");
+            DBCursor cursor = dbc.find(cond3);
+            JSONArray resultJa = new JSONArray();
+            while (cursor.hasNext()) {
+                DBObject each = cursor.next();
+                each.put("shopName", each.get("merchantName"));
+                each.put("platformType", each.get("platform_type"));
+                resultJa.add(each);
+            }
+            
+            JSONObject resultJo = new JSONObject();
+            resultJo.put("respCode", "0000");
+            resultJo.put("resultJa", resultJa);
+            return resultJo;
         }
-        
-        String queryStr = "?getNewVo=1&wmOrderPayType=2&wmOrderStatus=-2&sortField=1&lastLabel=&nextLabel=&_token="
-                + getValue(cookies, "token");
-        
-        if (paramJo.containsKey("beginTime")) {
-            queryStr = queryStr + "&startDate="
-                    + paramJo.getString("beginTime") + "&endDate="
-                    + paramJo.getString("beginTime");
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo;
         }
-        
-        String result = HttpRequest.sendGet2(UrlUtil.mtQuery + queryStr,
-                cookies);
-        
-        if (JsonUtil.isBlank(result)) {
-            JSONObject retJo = new JSONObject();
-            retJo.put("respCode", "9999");
-            return retJo;
-        }
-        
-        JSONObject retJo = null;
-        if (isJson(result)) {
-            retJo = JSON.parseObject(result);
-        }
-        else {
-            JSONObject respJo = new JSONObject();
-            respJo.put("respCode", "9999");
-            return respJo;
-        }
-        
-        if (JsonUtil.isBlank(retJo.get("wmOrderList"))) {
-            JSONObject respJo = new JSONObject();
-            respJo.put("respCode", "9999");
-            return respJo;
-        }
-        
-        JSONArray orderListJa = retJo.getJSONArray("wmOrderList");
-        
-        JSONArray orderList = new JSONArray();
-        JSONObject orderJo = new JSONObject();
-        
-        for (Object o : orderListJa) {
-            JSONObject jo = (JSONObject)o;
-            orderList.add(fixDatamt(jo, shopId));
-        }
-        
-        orderJo.put("respCode", "0000");
-        orderJo.put("orderList", orderList);
-        
-        return orderJo;
     }
+    
+    //    private JSONObject mtQueryOrder(String param, String shopId) {
+    //        
+    //        JSONObject paramJo = JSON.parseObject(param);
+    //        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+    //                .getBean("mongoTemplate");
+    //        
+    //        DBCollection dbc = mt.getCollection("dn_cookies");
+    //        BasicDBObject cond1 = new BasicDBObject();
+    //        cond1.put("userName", shopId);
+    //        DBCursor cursor = dbc.find(cond1);
+    //        
+    //        String cookies = null;
+    //        
+    //        while (cursor.hasNext()) {
+    //            DBObject dbo = cursor.next();
+    //            cookies = dbo.get("cookies").toString();
+    //        }
+    //        
+    //        String queryStr = "?getNewVo=1&wmOrderPayType=2&wmOrderStatus=-2&sortField=1&lastLabel=&nextLabel=&_token="
+    //                + getValue(cookies, "token");
+    //        
+    //        if (paramJo.containsKey("beginTime")) {
+    //            queryStr = queryStr + "&startDate="
+    //                    + paramJo.getString("beginTime") + "&endDate="
+    //                    + paramJo.getString("beginTime");
+    //        }
+    //        
+    //        String result = HttpRequest.sendGet2(UrlUtil.mtQuery + queryStr,
+    //                cookies);
+    //        
+    //        if (JsonUtil.isBlank(result)) {
+    //            JSONObject retJo = new JSONObject();
+    //            retJo.put("respCode", "9999");
+    //            return retJo;
+    //        }
+    //        
+    //        JSONObject retJo = null;
+    //        if (isJson(result)) {
+    //            retJo = JSON.parseObject(result);
+    //        }
+    //        else {
+    //            JSONObject respJo = new JSONObject();
+    //            respJo.put("respCode", "9999");
+    //            return respJo;
+    //        }
+    //        
+    //        if (JsonUtil.isBlank(retJo.get("wmOrderList"))) {
+    //            JSONObject respJo = new JSONObject();
+    //            respJo.put("respCode", "9999");
+    //            return respJo;
+    //        }
+    //        
+    //        JSONArray orderListJa = retJo.getJSONArray("wmOrderList");
+    //        
+    //        JSONArray orderList = new JSONArray();
+    //        JSONObject orderJo = new JSONObject();
+    //        
+    //        for (Object o : orderListJa) {
+    //            JSONObject jo = (JSONObject)o;
+    //            orderList.add(fixDatamt(jo, shopId));
+    //        }
+    //        
+    //        orderJo.put("respCode", "0000");
+    //        orderJo.put("orderList", orderList);
+    //        
+    //        return orderJo;
+    //    }
     
     private boolean isJson(String param) {
         try {
@@ -543,77 +756,113 @@ public class OrderController {
         return true;
     }
     
+    //    private JSONObject elemQueryOrder(String param, String shopId) {
+    //        JSONObject paramJo = JSON.parseObject(param);
+    //        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+    //                .getBean("mongoTemplate");
+    //        
+    //        DBCollection dbc = mt.getCollection("dn_ksid");
+    //        BasicDBObject cond1 = new BasicDBObject();
+    //        cond1.put("shopId", shopId);
+    //        DBCursor cursor = dbc.find(cond1);
+    //        
+    //        String ksid = null;
+    //        
+    //        while (cursor.hasNext()) {
+    //            DBObject dbo = cursor.next();
+    //            ksid = dbo.get("ksid").toString();
+    //        }
+    //        
+    //        JSONObject queryOrderJo = ElemeUtil.queryOrderJo();
+    //        queryOrderJo.getJSONObject("metas").put("ksid", ksid);
+    //        
+    //        queryOrderJo.getJSONObject("params").put("shopId", shopId);
+    //        queryOrderJo.getJSONObject("params")
+    //                .put("orderFilter",
+    //                        ElemeUtil.orderFilterMap.get(paramJo.getString("orderLatestStatus")));
+    //        
+    //        if (paramJo.containsKey("beginTime")) {
+    //            queryOrderJo.getJSONObject("params")
+    //                    .getJSONObject("condition")
+    //                    .put("beginTime",
+    //                            paramJo.getString("beginTime") + "T00:00:00");
+    //            queryOrderJo.getJSONObject("params")
+    //                    .getJSONObject("condition")
+    //                    .put("endTime",
+    //                            paramJo.getString("beginTime") + "T23:59:59");
+    //        }
+    //        
+    //        log.info("--------------queryOrderJo-------------"
+    //                + queryOrderJo.toString());
+    //        
+    //        try {
+    //            String queryOrderRe = HttpsRequestUtil.doPost(ElemeUtil.queryOrderurl,
+    //                    queryOrderJo.toString(),
+    //                    "UTF-8",
+    //                    300000,
+    //                    300000);
+    //            
+    //            log.info("--------------------queryOrderurl-----------------"
+    //                    + queryOrderRe);
+    //            JSONObject queryReJo = JSON.parseObject(queryOrderRe);
+    //            JSONArray reJa = queryReJo.getJSONArray("result");
+    //            
+    //            if (JsonUtil.isBlank(reJa)) {
+    //                JSONObject retJo = new JSONObject();
+    //                retJo.put("respCode", "9999");
+    //                return retJo;
+    //            }
+    //            JSONArray retJa = new JSONArray();
+    //            for (Object o : reJa) {
+    //                JSONObject reJo = (JSONObject)o;
+    //                retJa.add(fixData(reJo));
+    //            }
+    //            JSONObject retJo = new JSONObject();
+    //            retJo.put("respCode", "0000");
+    //            retJo.put("retJa", retJa);
+    //            return retJo;
+    //        }
+    //        catch (Exception e) {
+    //            JSONObject retJo = new JSONObject();
+    //            retJo.put("respCode", "9999");
+    //            e.printStackTrace();
+    //            return retJo;
+    //        }
+    //    }
+    
     private JSONObject elemQueryOrder(String param, String shopId) {
-        JSONObject paramJo = JSON.parseObject(param);
-        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
-                .getBean("mongoTemplate");
-        
-        DBCollection dbc = mt.getCollection("dn_ksid");
-        BasicDBObject cond1 = new BasicDBObject();
-        cond1.put("shopId", shopId);
-        DBCursor cursor = dbc.find(cond1);
-        
-        String ksid = null;
-        
-        while (cursor.hasNext()) {
-            DBObject dbo = cursor.next();
-            ksid = dbo.get("ksid").toString();
-        }
-        
-        JSONObject queryOrderJo = ElemeUtil.queryOrderJo();
-        queryOrderJo.getJSONObject("metas").put("ksid", ksid);
-        
-        queryOrderJo.getJSONObject("params").put("shopId", shopId);
-        queryOrderJo.getJSONObject("params")
-                .put("orderFilter",
-                        ElemeUtil.orderFilterMap.get(paramJo.getString("orderLatestStatus")));
-        
-        if (paramJo.containsKey("beginTime")) {
-            queryOrderJo.getJSONObject("params")
-                    .getJSONObject("condition")
-                    .put("beginTime",
-                            paramJo.getString("beginTime") + "T00:00:00");
-            queryOrderJo.getJSONObject("params")
-                    .getJSONObject("condition")
-                    .put("endTime",
-                            paramJo.getString("beginTime") + "T23:59:59");
-        }
-        
-        log.info("--------------queryOrderJo-------------"
-                + queryOrderJo.toString());
-        
         try {
-            String queryOrderRe = HttpsRequestUtil.doPost(ElemeUtil.queryOrderurl,
-                    queryOrderJo.toString(),
-                    "UTF-8",
-                    300000,
-                    300000);
-            
-            log.info("--------------------queryOrderurl-----------------"
-                    + queryOrderRe);
-            JSONObject queryReJo = JSON.parseObject(queryOrderRe);
-            JSONArray reJa = queryReJo.getJSONArray("result");
-            
-            if (JsonUtil.isBlank(reJa)) {
-                JSONObject retJo = new JSONObject();
-                retJo.put("respCode", "9999");
-                return retJo;
+            JSONObject paramJo = JSON.parseObject(param);
+            BasicDBObject cond3 = new BasicDBObject();
+            if (paramJo.containsKey("beginTime")) {
+                BasicDBObject cond1 = new BasicDBObject();
+                cond1.put("$gt", paramJo.getString("beginTime"));
+                cond3.put("orderTime", cond1);
             }
-            JSONArray retJa = new JSONArray();
-            for (Object o : reJa) {
-                JSONObject reJo = (JSONObject)o;
-                retJa.add(fixData(reJo));
+            cond3.put("merchantId", shopId);
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            DBCollection dbc = mt.getCollection("dn_order");
+            DBCursor cursor = dbc.find(cond3);
+            JSONArray resultJa = new JSONArray();
+            while (cursor.hasNext()) {
+                DBObject each = cursor.next();
+                each.put("shopName", each.get("merchantName"));
+                each.put("platformType", each.get("platform_type"));
+                resultJa.add(each);
             }
-            JSONObject retJo = new JSONObject();
-            retJo.put("respCode", "0000");
-            retJo.put("retJa", retJa);
-            return retJo;
+            
+            JSONObject resultJo = new JSONObject();
+            resultJo.put("respCode", "0000");
+            resultJo.put("resultJa", resultJa);
+            return resultJo;
         }
         catch (Exception e) {
-            JSONObject retJo = new JSONObject();
-            retJo.put("respCode", "9999");
             e.printStackTrace();
-            return retJo;
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo;
         }
     }
     
@@ -790,6 +1039,12 @@ public class OrderController {
     public @ResponseBody String loadOrder(HttpServletRequest request,
             @RequestBody String param) {
         
+        JSONObject paramJo = JSON.parseObject(param);
+        String channelType = JsonUtil.getString(paramJo, "channelType");
+        
+        log.info("<----------------------渠道编码：------------------------>"
+                + channelType);
+        
         String confirmStr = confirmOrder(request, param);
         JSONObject confirmJo = JSON.parseObject(confirmStr);
         if ("9999".equals(confirmJo.getString("respCode"))) {
@@ -808,7 +1063,9 @@ public class OrderController {
         if ("9999".equals(insertDbJo.getString("respCode"))) {
             return insertDbJo.toString();
         }
-        print();
+        if ("PC".equals(channelType)) {
+            print();
+        }
         
         return confirmJo.toString();
     }
@@ -879,6 +1136,21 @@ public class OrderController {
             @RequestBody String param) {
         try {
             return os.saveOrder(param);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo.toString();
+        }
+    }
+    
+    @RequestMapping("/orderInsertBatchDb")
+    public @ResponseBody String orderInsertBatchDb(HttpServletRequest request,
+            @RequestBody String param) {
+        try {
+            return os.saveOrders(param);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -1073,6 +1345,21 @@ public class OrderController {
         }
         
         return null;
+    }
+    
+    @RequestMapping("/queryOrder")
+    public @ResponseBody String queryOrder(HttpServletRequest request,
+            @RequestBody String param) {
+        try {
+            return os.queryOrder(param).toString();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject reJo = new JSONObject();
+            reJo.put("respCode", "9999");
+            reJo.put("respDesc", e.getMessage());
+            return reJo.toString();
+        }
     }
     
     //    @RequestMapping("/testOrder")
@@ -1288,27 +1575,31 @@ public class OrderController {
     //        return jo.toString();
     //    }
     public static void main(String[] args) {
-        File directory = new File("");
-        try {
-            log.info(directory.getCanonicalPath());
-            //            System.out.println(Thread.currentThread()
-            //                    .getContextClassLoader()
-            //                    .getResource(""));
-            //            System.out.println(OrderController.class.getClassLoader()
-            //                    .getResource(""));
-            //            System.out.println(ClassLoader.getSystemResource(""));
-            System.out.println(OrderController.class.getResource("").getFile());
-            FileReader reader = new FileReader(
-                    OrderController.class.getResource("").getFile()
-                            + File.separator + "code.js");
-            //            System.out.println(OrderController.class.getResource("/"));//Class文件所在路径 
-            //            System.out.println(new File("/").getAbsolutePath());
-            //            System.out.println(System.getProperty("user.dir"));
-            System.out.print(reader);
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        //        File directory = new File("");
+        //        try {
+        //            log.info(directory.getCanonicalPath());
+        //            //            System.out.println(Thread.currentThread()
+        //            //                    .getContextClassLoader()
+        //            //                    .getResource(""));
+        //            //            System.out.println(OrderController.class.getClassLoader()
+        //            //                    .getResource(""));
+        //            //            System.out.println(ClassLoader.getSystemResource(""));
+        //            System.out.println(OrderController.class.getResource("").getFile());
+        //            FileReader reader = new FileReader(
+        //                    OrderController.class.getResource("").getFile()
+        //                            + File.separator + "code.js");
+        //            //            System.out.println(OrderController.class.getResource("/"));//Class文件所在路径 
+        //            //            System.out.println(new File("/").getAbsolutePath());
+        //            //            System.out.println(System.getProperty("user.dir"));
+        //            System.out.print(reader);
+        //        }
+        //        catch (IOException e) {
+        //            // TODO Auto-generated catch block
+        //            e.printStackTrace();
+        //        }
+        JSONObject jo = new JSONObject();
+        jo.put("username", "15243688033_eleme");
+        jo.put("password", "dbb888888");
+        new OrderController().elmUserLogin(jo);
     }
 }
