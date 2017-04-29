@@ -30,3 +30,6 @@ var DICTS = {
 		"2" : "订单完成"
 	}
 };
+
+var SYSTEM_PLANTFORM = navigator.userAgent;
+var isAndroid = SYSTEM_PLANTFORM.indexOf('Android') > -1 || SYSTEM_PLANTFORM.indexOf('Adr') > -1; //android终端

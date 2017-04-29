@@ -7,18 +7,24 @@
 		<meta name="renderer" content="webkit">
 		<meta name="Keywords" content=""/>
 		<meta name="Description" content=""/>
-        <meta name="viewport" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <link rel="stylesheet" href="assets/plug/bootstrap-3.3.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/style/index.min.css">
+        <link rel="stylesheet" media="screen and (max-width: 720px)" href="assets/style/mobile.css">
     </head>
     <body>
         <header>
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-8 col-xs-6">
                     <a href="">
-                        <img src="assets/images/logo.png" alt="">
+                        <i class="iconfont">&#xe631;</i>
                         <span>商家中心</span>
                     </a>
+                </div>
+                <div class="col-xs-6 menu-mobile">
+                  <a href="javascript: void(0);" class="header-menu-mobile">
+                    <i class="iconfont">&#xe646;</i>
+                  </a>
                 </div>
                 <div class="col-md-4">
                     <div class="user-info">
@@ -64,6 +70,11 @@
         	          <span class=""><i class="iconfont">&#xe601;</i>帮助</span>
         	        </a>
         	      </li>
+        	       <li>
+        	        <a href="javascript:;" data-href="help.html">
+        	          <span class=""><i class="iconfont">&#xe609;</i>退出</span>
+        	        </a>
+        	      </li>
         	    </ul>
             </div>
             <div class="left-full">
@@ -76,38 +87,37 @@
                                     <a href="#">处理订单</a>
                                 </div>
                                 <div class="row order">
-                                    <div class="col-md-3 text-center">
+                                    <div class="col-md-3 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>新订单</p>
                                     </div>
-                                    <div class="col-md-3 text-center">
+                                    <div class="col-md-3 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>异常订单</p>
                                     </div>
-                                    <div class="col-md-3 text-center">
+                                    <div class="col-md-3 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>催单</p>
                                     </div>
-                                    <div class="col-md-3 text-center">
+                                    <div class="col-md-3 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>退单</p>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 order-control">
                             <div class="plan">
                                 <div class="plan-title clearfix">
                                     <h6>待处理的订单</h6>
                                     <a href="#">处理订单</a>
                                 </div>
                                 <div class="row couple-back">
-                                    <div class="col-md-6 text-center">
+                                    <div class="col-md-6 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>新订单</p>
                                     </div>
-                                    <div class="col-md-6 text-center">
+                                    <div class="col-md-6 col-xs-6 text-center">
                                         <h1>10</h1>
                                         <p>异常订单</p>
                                     </div>
@@ -137,7 +147,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 order-control">
                             <div class="plan">
                                 <div class="plan-title clearfix">
                                     <h6>通知中心</h6>
@@ -168,6 +178,7 @@
 
             </div>
         </div>
+        <div class="mask-mobile"></div>
         <script src="assets/plug/jquery/jquery-2.2.4.js" charset="utf-8"></script>
         <script src="assets/plug/bootstrap-3.3.0/js/bootstrap.min.js" charset="utf-8"></script>
         <script src="assets/javascript/index.js" charset="utf-8"></script>

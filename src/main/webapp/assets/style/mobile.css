@@ -1,0 +1,286 @@
+/*首页*/
+.wrapper .plan h1 {
+	font-size: 35px;
+}
+.order-control {
+	margin-top: 20px;
+}
+
+html, body {
+  min-width: inherit;
+}
+header {
+	overflow: hidden;
+	position: fixed;
+	z-index: 9999;
+	width: 100%;
+}
+header .user-info {
+  display: none;
+}
+header .user-info .btn-group {
+  display: none;
+}
+header a span {
+	display: none;
+}
+.header-menu-mobile {
+  float: right;
+}
+.header-menu-mobile i.iconfont{
+  color: white;
+  font-size: 32px;
+  line-height: 50px;
+}
+.wrapper {
+  position: relative;
+  left: 0px;
+  top: 50px;
+  height: inherit;
+}
+.wrapper .menu {
+  display: none;
+  width: 100%;
+  position: fixed;
+  z-index: 999;
+  height: auto;
+}
+.wrapper .left-full {
+  position: inherit;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+}
+.container-fluid.order-box {
+  position: inherit;
+  overflow: inherit;
+}
+
+.wrapper .container-fluid.nav {
+  position: fixed;
+	top: 50px;
+}
+
+.menu-list ul li div:nth-child(3){
+  display: none;
+}
+
+.order-box .order-list .new-order-title div.order-id {
+  display: none;
+}
+.container-fluid.order-box .user-info .address {
+  margin: inherit;
+}
+
+.container-fluid.order-box .user-info .address {
+	margin-left: -5px;
+	margin-top: 10px;
+}
+.order-box .order-list .new-order-title .shopName {
+	margin: auto;
+}
+.order-box .order-list .new-order-title .order-num {
+	margin-left: 0px;
+	margin-top: 10px;
+	display: block;
+}
+.menu-list h6 {
+
+	display: block;
+	margin-bottom: 5px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	-o-text-overflow:ellipsis;
+	-webkit-text-overflow:ellipsis;
+	-moz-text-overflow:ellipsis;
+	white-space:nowrap;
+	vertical-align: bottom;
+}
+.menu-list .label{
+	font-size: 12px;
+	margin-top: 10px;
+}
+
+
+/*- 订单搜索 -*/
+.wrapper-phone {
+	/*overflow: hidden;*/
+}
+.order-search-page > .content {
+	 position: inherit;
+     top: auto;
+     left: auto;
+     bottom: auto;
+     right: auto;
+}
+.order-search-page > .content .order-search-list .row {
+	height: inherit;
+
+}
+.order-search-page > .content .order-search-list {
+	margin-top: 100px;
+}
+
+.order-search-page .col-md-9 .scroll-order {
+	position: inherit;
+	width: 100%;
+    overflow: initial;
+    right: auto;
+    top: auto;
+    left: auto;
+    bottom: auto;
+    margin-bottom: 40px;
+}
+.order-search-page > .content .order-search-list {
+	height: auto;
+}
+
+.order-search-page .paging {
+	display: none;
+}
+.order-survey {
+	display: none;
+}
+.order-search-page .filter {
+	padding: 15px;
+}
+.order-search-page .filter tr td {
+	width: 20%;
+    font-size: 12px;
+}
+.order-search-page .order-search .checked-menu table {
+	width: 100%;
+}
+.order-search-page .order-search .checked-menu table tr td:first-child {
+	width: 100%;
+	display: block;
+	margin: initial;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.order-search-page .order-search .checked-menu table tr td {
+	line-height: 40px;
+	width: 25%;
+}
+
+/*-  loading -*/
+.nodata-display img {
+	width: 40%;
+}
+
+/*loagin*/
+.login-title  {
+	text-align: center;
+	display: block;
+}
+.login-title h1{
+	font-size: 20px;
+	color: white;
+	margin-top: 20px;
+	padding-bottom: 10px;
+}
+.login-title svg{
+	width: 80px;
+}
+.login .container{
+	height: 450px;
+	background: #F47115;
+}
+.login .form-login h5 {
+	display: none;
+}
+.login {
+	height: auto;
+	background: inherit;
+}
+.login .express {
+	display: none;
+	margin: inherit;
+	width: 60%;
+	margin: 20px auto;
+}
+.container {
+	padding: inherit;
+	margin: inherit;
+}
+.login .form-login {
+	padding-top: 10px;
+	margin: inherit;
+	margin-top: 10px;
+	float: inherit;
+	width: 100%;
+}
+.login .form-login ul li {
+	margin-top: 10px;
+}
+footer {
+	text-align: center;
+	padding: 0px 10px;
+    margin-top: 25px;
+    font-size: 12px;
+    margin-bottom: 30px;
+}
+.order-search-page .filter {
+	right: 0px;
+	position: fixed;
+	left: 0px;
+	top: 50px;
+	z-index: 99;
+}
+.order-search-page .filter table {
+	width: 100%;
+}
+.order-search-page .filter tr td .date-form {
+	width: 100%;
+	display: none;
+}
+.order-search-page .filter tr td .date-form .pc-date {
+	display: none;
+}
+.order-search-page .filter tr td .date-form input.mobile-date {
+	background: none;
+	width: 200%;
+	border: 1px solid #E3E3E3;
+}
+
+/*- mask -*/
+.mask-mobile {
+	display: none;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	background-color: rgba(0, 0, 0, .6);
+}
+.order-box .order-list {
+	position: relative;
+}
+.container-fluid.order-box .row.getOrder {
+	height: 10px;
+}
+.container-fluid.order-box .row.getOrder button{
+	position: absolute;
+	top: 15px;
+	right: 15px;
+}
+.order-box .order-list .new-order-title .shopName span {
+	width: 128px;
+	display: inline-block;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	-o-text-overflow:ellipsis;
+	-webkit-text-overflow:ellipsis;
+	-moz-text-overflow:ellipsis;
+	white-space:nowrap;
+	vertical-align: bottom;
+}
+
+.loading img {
+	width: 35%;
+}

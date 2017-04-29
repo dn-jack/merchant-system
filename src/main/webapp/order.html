@@ -1,28 +1,33 @@
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>餐与者-商家中心</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="renderer" content="webkit">
-		<meta name="Keywords" content=""/>
-		<meta name="Description" content=""/>
-        <meta name="viewport" content="">
+    		<meta name="renderer" content="webkit">
+    		<meta name="Keywords" content=""/>
+    		<meta name="Description" content=""/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <link rel="stylesheet" href="assets/plug/bootstrap-3.3.0/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="assets/style/animate.min.css">
         <link rel="stylesheet" type="text/css" href="assets/plug/jQuery-IOS/lc_switch.css"/>
         <link href="assets/plug/icheck-1.x/skins/square/red.css" rel="stylesheet">
         <link rel="stylesheet" href="assets/style/index.min.css">
+        <link rel="stylesheet" media="screen and (max-width: 720px)" href="assets/style/mobile.css">
     </head>
     <body>
         <header>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 col-xs-6">
                     <a href="">
-                        <img src="./assets/images/logo.png" alt="">
+                       <i class="iconfont">&#xe631;</i>
                         <span>商家中心</span>
                     </a>
+                </div>
+                <div class="col-xs-6 menu-mobile">
+                  <a href="javascript: void(0);" class="header-menu-mobile">
+                    <i class="iconfont">&#xe646;</i>
+                  </a>
                 </div>
                 <div class="col-md-6">
                     <div class="user-info">
@@ -66,15 +71,20 @@
         	          <span class=""><i class="iconfont">&#xe601;</i>帮助</span>
         	        </a>
         	      </li>
+        	      <li>
+        	        <a href="javascript:;" data-href="help.html">
+        	          <span class=""><i class="iconfont">&#xe609;</i>退出</span>
+        	        </a>
+        	      </li>
         	    </ul>
             </div>
             <div class="left-full order-page">
                 <div class="container-fluid nav">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-8 col-xs-4">
                         		<span>最新订单</span>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-xs-8">
 	                        	<div class="sound" id="sound" >
 	                        		<i class="iconfont">&#xe611;</i>
 	                        		<i class="iconfont hide">&#xe602;</i>
@@ -90,84 +100,88 @@
                 </div>
             </div>
         </div>
-        <audio id="audio" src="assets/resource/ring.mp3"></audio>
-        
+        <audio id="audio">
+				<!--<source  src="assets/resource/ring.mp3" type="audio/mp3">-->
+				<source src="assets/resource/song.ogg" type="audio/ogg">
+				<!--<source src="song.m4a" type="audio/wav">-->
+				你的浏览器不支持html5的audio标签
+        </audio>
+		<div class="mask-mobile"></div>
         <script id="order" type="text/template">
-        	<div class="order-bind">
-        		<div class="order-list">
-            		<div class="new-order-title">
-                    	<h4><div class="platform-{platform_type}">【#[Utils.getDict('PLATFORM','{platform_type}')]】</div></h4>
-            			<div class="shopName">店铺：<span>{merchantName}</span></div>
-                    
-                    	<div class="order-num">
-                    		<div class="ordertime">下单时间：<span>{orderTime}</span></div>
-                    		<div class="order-id">订单号：<span>{orderNo}</span> </div>
-                    	</div>
-                </div>
-                <div class="user-info row">
-                		<div class="col-md-12">
-                			<div class="urser-name"> <span>{userName} </span><span class="contect">{phone}</span></div>
-						<div class="address">
-							<p> <i class="iconfont">&#xe68e;</i>{consigneeAddress} <span>[ {distance} ]</span></p>
-						</div>
-                		</div>
-                </div>
-                <div class="menu-list">
-                		<ul></ul>
-                </div>
-                <div class="other-cost">
-                		<ul>
-                			<li class="row">
-                				<div class="col-md-6">餐盒费</div>
-                				<div class="col-md-6">{boxPrice}</div>
-                			</li>
-                			<li class="row">
-                				<div class="col-md-6">配送费</div>
-                				<div class="col-md-6">{distributionPrice}</div>
-                			</li>
-                		</ul>
-                </div>
-                <div class="active-cost">
-                		<ul>
-                			<li class="row">
-                				<div class="col-md-6">立减优惠</div>
-                				<div class="col-md-6">-{discount}</div>
-                			</li>
-                			<li class="row">
-                				<div class="col-md-6">红包抵扣</div>
-                				<div class="col-md-6">-{hongbao}</div>
-                			</li>
-                		</ul>
-                </div>
-                <div class="total row">
-                		<div class="col-md-8 text-left">
-                			<!--<span class="">
-                				{orderActivity}
-                			</span>-->
-                		</div>
-                		<div class="col-md-4">
-                			<span>(合计) </span>{orderPrice}
-                		</div>
-                </div>
-                <div class="row getOrder">
-                		<button class="btn btn-theme-yellow">接受订单</button>
-                </div>
-        	</div>
+	        	<div class="order-bind">
+	        		<div class="order-list">
+	            		<div class="new-order-title">
+	                    	<h4><div class="platform-{platform_type}">【#[Utils.getDict('PLATFORM','{platform_type}')]】</div></h4>
+	            			<div class="shopName">店铺：<span>{merchantName}</span></div>
+	                    	<div class="order-num">
+	                    		<div class="ordertime">下单时间：<span>{orderTime}</span></div>
+	                    		<div class="order-id">订单号：<span>{orderNo}</span> </div>
+	                    	</div>
+	                </div>
+	                <div class="user-info row">
+	                		<div class="col-md-12">
+	                			<div class="urser-name"> <span>{userName} </span><span class="contect">{phone}</span></div>
+	          						<div class="address">
+	          							<p> <i class="iconfont">&#xe68e;</i>{consigneeAddress} <span>[ {distance} ]</span></p>
+	          						</div>
+	                		</div>
+	                </div>
+	                <div class="menu-list">
+	                		<ul></ul>
+	                </div>
+	                <div class="other-cost">
+	                		<ul>
+	                			<li class="row">
+	                				<div class="col-md-6 col-xs-6">餐盒费</div>
+	                				<div class="col-md-6 col-xs-6">{boxPrice}</div>
+	                			</li>
+	                			<li class="row">
+	                				<div class="col-md-6 col-xs-6">配送费</div>
+	                				<div class="col-md-6 col-xs-6">{distributionPrice}</div>
+	                			</li>
+	                		</ul>
+	                </div>
+	                <div class="active-cost">
+	                		<ul>
+	                			<li class="row">
+	                				<div class="col-md-6 col-xs-6">立减优惠</div>
+	                				<div class="col-md-6 col-xs-6">-{discount}</div>
+	                			</li>
+	                			<li class="row">
+	                				<div class="col-md-6 col-xs-6">红包抵扣</div>
+	                				<div class="col-md-6 col-xs-6">-{hongbao}</div>
+	                			</li>
+	                		</ul>
+	                </div>
+	                <div class="total row">
+	                		<div class="col-md-8 text-left">
+	                			<!--<span class="">
+	                				{orderActivity}
+	                			</span>-->
+	                		</div>
+	                		<div class="col-md-4">
+	                			<span>(合计) </span>{orderPrice}
+	                		</div>
+	                </div>
+	                <div class="row getOrder">
+	                		<button class="btn btn-theme-yellow">接受订单</button>
+	                </div>
+	        	</div>
         </script>
         <script id="detail" type="text/template">
         	<li class="row">
-				<div class="col-md-3">
-					<h6>{dishName}</h6> <span class="label label-default">{activityName}</span>
-				</div>
-				<div class="col-md-3">
-					×{count}
-				</div>
-				<div class="col-md-3">
-					{price1}
-				</div>
-				<div class="col-md-3">
-					{price2}
-				</div>
+    				<div class="col-md-3 col-xs-6">
+    					<h6>{dishName}</h6> <span class="label label-default">{activityName}</span>
+    				</div>
+    				<div class="col-md-3 col-xs-3">
+    					×{count}
+    				</div>
+    				<div class="col-md-3 col-xs-3">
+    					{price1}
+    				</div>
+    				<div class="col-md-3 col-xs-3">
+    					{price2}
+    				</div>
 			</li>
         </script>
         <script src="assets/plug/jquery/jquery-2.2.4.js" charset="utf-8"></script>
@@ -177,7 +191,7 @@
         <script src="assets/plug/icheck-1.x/icheck.min.js"></script>
         <script src="assets/javascript/index.js" charset="utf-8"></script>
         <script type="text/javascript" src="assets/javascript/order.js"></script>
-       <script type="text/javascript" src="assets/javascript/websocket.js"></script>
+        <!-- <script type="text/javascript" src="assets/javascript/websocket.js"></script> -->
         <script type="text/javascript">
         		$('#lcs_check').lc_switch();//接单UI生成
         </script>

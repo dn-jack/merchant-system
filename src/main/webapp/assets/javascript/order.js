@@ -77,6 +77,7 @@
 			this.playAudio();// 提示音播报
 		},
 		genOrder : function(order, temp, tempDetail) {
+			console.log(order)
 			var _temp = temp;
 			var _details = "";
 			var _regex = /(\{(.+?)\})/g;
@@ -126,23 +127,25 @@
 					});
 		},
 		postPromise : function(url, params, callback) {
-			console.log(params);
-			$.ajax({
-						type : "post",
-						url : url,
-						data : JSON.stringify(params),
-						cache : false,
-						dataType : "json",
-						contentType : "application/json; charset=utf-8",
-						error : function() {
-							alert("接单失败！");
-						},
-						success : function(response) {
-							callback(response);
-						}
 
-					});
-
+			// $.ajax({
+			// 	type : "post",
+			// 	url : url,
+			// 	data : JSON.stringify(params),
+			// 	cache : false,
+			// 	dataType : "json",
+			// 	contentType : "application/json; charset=utf-8",
+			// 	error : function() {
+			// 		alert("接单失败！");
+			// 	},
+			// 	success : function(response) {
+			// 		callback(response);
+			// 	}
+			//
+			// });
+			callback({
+				dishName: "这是一个店铺"
+			})
 		},
 		bindEvent : function() {
 			var that = this;
@@ -169,7 +172,7 @@
 								if (!that.hasWarnOrders()) {
 									that.$wol.data("nodata-display").show();
 								}
-								// 修改mongodb订单状态
+								修改mongodb订单状态
 								that.postPromise(that.opt.acceptURL, /*{
 											"merchantId" : bind.merchantId,
 											"orderNo" : bind.orderNo,
@@ -197,11 +200,36 @@ $(function() {
 				show : true
 			});
 	$(".data-list").loading();
-	// var orderList = $.orderList();
-	// window.setTimeout(function(){
-	// // window.setInterval(function(){
-	// 	$.getJSON("json/order-list.json" , function(data){
-	// 		orderList.processOrders(data);
-	// 	});
-	// },1000);
+	 var orderList = $.orderList();
+	window.setTimeout(function(){
+	// window.setInterval(function(){
+		orderList.processOrders([{
+			platform_type: 'mt',
+			merchantName: "这是一个店铺店铺店铺",
+			orderTime: "2017-45-45 34:00:00",
+			orderNo: "s2349872983759859",
+			userName: "james",
+			phone: "183-7314-4578",
+			dishes: [
+				{
+					dishName: "这是一个菜名",
+					activityName: "特价菜",
+					count: "34",
+					price1: "234.00",
+					price2: "984.00",
+				},
+				{
+					dishName: "这是一个菜名",
+					activityName: "特价菜",
+					count: "34",
+					price1: "234.00",
+					price2: "984.00",
+				},
+
+			]
+		}]);
+		// $.getJSON("json/order-list.json" , function(data){
+		//
+		// });
+	},1000);
 });
