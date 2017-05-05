@@ -87,6 +87,7 @@ public class OrderController {
     public @ResponseBody String validateUser(HttpServletRequest request,
             HttpServletResponse response, @RequestBody String param) {
         
+        log.info(param);
         JSONObject paramJo = JSON.parseObject(param);
         String platformType = paramJo.getString("platformType");
         if ("elm".equals(platformType)) {
@@ -96,6 +97,28 @@ public class OrderController {
             return mtUserLogin(paramJo);
         }
         return null;
+    }
+    
+    private void insertToMongodb(String key, String value) {
+        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                .getBean("mongoTemplate");
+        JSONObject monjo = new JSONObject();
+        monjo.put("key", key);
+        monjo.put("value", value);
+        mt.insert(monjo.toString(), "dn_validateUser");
+    }
+    
+    private boolean validateUserFromMongo(String key) {
+        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                .getBean("mongoTemplate");
+        DBCollection dbc = mt.getCollection("dn_validateUser");
+        BasicDBObject cond3 = new BasicDBObject();
+        cond3.put("key", key);
+        DBCursor cursor = dbc.find(cond3);
+        while (cursor.hasNext()) {
+            return true;
+        }
+        return false;
     }
     
     private String elmUserLogin(JSONObject param) {
@@ -112,8 +135,7 @@ public class OrderController {
             String username = param.getString("username");
             String password = param.getString("password");
             
-            if (islogin.containsKey("elm" + username)
-                    && "0000".equals(islogin.get("elm" + username))) {
+            if (validateUserFromMongo(username + password)) {
                 retJo.put("respCode", "0000");
                 retJo.put("respDesc", "调用成功且登录验证成功！");
                 return retJo.toString();
@@ -140,6 +162,7 @@ public class OrderController {
                 islogin.put("elm" + username, "0000");
                 retJo.put("respCode", "0000");
                 retJo.put("respDesc", "调用成功且登录验证成功！");
+                insertToMongodb(username + password, "0000");
             }
             else {
                 islogin.put("elm" + username, "9999");
@@ -502,8 +525,8 @@ public class OrderController {
             JSONArray elemShopsJa = shopIdsJo.getJSONArray("elemShops");
             if (JsonUtil.isNotBlank(elemShopsJa) && elemShopsJa.size() > 0) {
                 for (Object o : elemShopsJa) {
-                    String shopId = (String)o;
-                    elemshopIdsList.add(shopId);
+                    JSONObject shopIdJo = (JSONObject)o;
+                    elemshopIdsList.add(shopIdJo.getString("shopId"));
                 }
             }
         }
@@ -513,8 +536,8 @@ public class OrderController {
             if (JsonUtil.isNotBlank(meituanShopsJa)
                     && meituanShopsJa.size() > 0) {
                 for (Object o : meituanShopsJa) {
-                    String shopId = (String)o;
-                    mtshopIdsList.add(shopId);
+                    JSONObject shopIdJo = (JSONObject)o;
+                    mtshopIdsList.add(shopIdJo.getString("meituanId"));
                 }
             }
         }
@@ -523,8 +546,8 @@ public class OrderController {
             JSONArray baiduShopsJa = shopIdsJo.getJSONArray("baiduShops");
             if (JsonUtil.isNotBlank(baiduShopsJa) && baiduShopsJa.size() > 0) {
                 for (Object o : baiduShopsJa) {
-                    String shopId = (String)o;
-                    bdwmshopIdsList.add(shopId);
+                    JSONObject shopIdJo = (JSONObject)o;
+                    bdwmshopIdsList.add(shopIdJo.getString("baiduId"));
                 }
             }
         }
@@ -1052,7 +1075,7 @@ public class OrderController {
             return confirmJo.toString();
         }
         
-        JSONObject updateStateRet = updateMongodbState(param);
+        JSONObject updateStateRet = insertToMongo(paramJo);
         
         if ("9999".equals(updateStateRet.getString("respCode"))) {
             return updateStateRet.toString();
@@ -1068,6 +1091,32 @@ public class OrderController {
         }
         
         return confirmJo.toString();
+    }
+    
+    private JSONObject insertToMongo(JSONObject queryReJo) {
+        try {
+            MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                    .getBean("mongoTemplate");
+            
+            //            DBCollection dbc = mt.getCollection("dn_order");
+            //            BasicDBObject cond1 = new BasicDBObject();
+            //            cond1.put("orderNo", JsonUtil.getString(queryReJo, "id"));
+            //            DBCursor cursor = dbc.find(cond1);
+            //            if (!cursor.hasNext()) {
+            mt.insert(queryReJo.toString(), "dn_order");
+            //            }
+            JSONObject retJo = new JSONObject();
+            retJo.put("respCode", "0000");
+            retJo.put("respDesc", "接单成功！");
+            return retJo;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JSONObject retJo = new JSONObject();
+            retJo.put("respCode", "9999");
+            retJo.put("respDesc", "接单失败！");
+            return retJo;
+        }
     }
     
     private void print() {

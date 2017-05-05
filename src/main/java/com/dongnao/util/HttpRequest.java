@@ -167,9 +167,9 @@ public class HttpRequest {
             // 鑾峰彇鎵�湁鍝嶅簲澶村瓧娈�
             map = connection.getHeaderFields();
             // 閬嶅巻鎵�湁鐨勫搷搴斿ご瀛楁
-            for (String key : map.keySet()) {
-                System.out.println(key + "--->" + map.get(key));
-            }
+            //            for (String key : map.keySet()) {
+            //                System.out.println(key + "--->" + map.get(key));
+            //            }
             // 瀹氫箟 BufferedReader杈撳叆娴佹潵璇诲彇URL鐨勫搷搴�
             in = new BufferedReader(new InputStreamReader(
                     connection.getInputStream()));
@@ -451,9 +451,9 @@ public class HttpRequest {
             retMap.put("result", result);
             Map<String, List<String>> map = conn.getHeaderFields();
             // 閬嶅巻鎵�湁鐨勫搷搴斿ご瀛楁
-            for (String key : map.keySet()) {
-                System.out.println(key + "--->" + map.get(key));
-            }
+            //            for (String key : map.keySet()) {
+            //                System.out.println(key + "--->" + map.get(key));
+            //            }
             List<String> cookies1 = map.get("Set-Cookie");
             StringBuffer sb1 = new StringBuffer();
             if (cookies1 != null) {

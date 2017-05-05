@@ -103,7 +103,7 @@
         <audio id="audio" src="assets/resource/ring.mp3"></audio>
 		<div class="mask-mobile"></div>
         <script id="order" type="text/template">
-	        	<div class="order-bind">
+	        	<div class="order-bind" platform="{platform_type}">
 	        		<div class="order-list">
 	            		<div class="new-order-title">
 	                    	<h4><div class="platform-{platform_type}">【#[Utils.getDict('PLATFORM','{platform_type}')]】</div></h4>
@@ -186,7 +186,7 @@
         <script src="assets/plug/icheck-1.x/icheck.min.js"></script>
         <script src="assets/javascript/index.js" charset="utf-8"></script>
         <script type="text/javascript" src="assets/javascript/order.js"></script>
-        <script type="text/javascript" src="assets/javascript/websocket.js"></script>
+        <!-- <script type="text/javascript" src="assets/javascript/websocket.js"></script> -->
         <script type="text/javascript">
         		$('#lcs_check').lc_switch();//接单UI生成
         </script>

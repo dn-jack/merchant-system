@@ -88,8 +88,24 @@ public class JsonUtil {
         if (!jo.containsKey(name)) {
             return new BigDecimal(0.0);
         }
+        BigDecimal com = new BigDecimal(0);
+        return jo.getBigDecimal(name).compareTo(com) >= 0 ? jo.getBigDecimal(name)
+                : jo.getBigDecimal(name).multiply(new BigDecimal(-1));
+    }
+    
+    public static void main(String[] args) {
+        BigDecimal decimal = new BigDecimal(123);
+        decimal = decimal.multiply(new BigDecimal(-1));
+        System.out.println(decimal);
+    }
+    
+    public static boolean getBoolean(JSONObject jo, String name) {
         
-        return jo.getBigDecimal(name);
+        if (!jo.containsKey(name)) {
+            return false;
+        }
+        
+        return jo.getBoolean(name);
     }
     
 }

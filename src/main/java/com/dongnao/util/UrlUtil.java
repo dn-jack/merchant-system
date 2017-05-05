@@ -24,4 +24,13 @@ public class UrlUtil {
     public static String MT_logon = "http://e.waimai.meituan.com/v2/epassport/logon";
     
     public static String MT_loginurl = "https://epassport.meituan.com/account/loginv2?service=waimai&continue=http://e.waimai.meituan.com/v2/epassport/entry&part_type=0&bg_source=3";
+    
+    public static String MT_QO = "http://e.waimai.meituan.com/v2/order/receive/unprocessed/r/ofq";
+    
+    public static String MT_CI = "http://e.waimai.meituan.com/v2/order/receive/r/chargeInfo";
+    
+    /**
+     * 百度外卖url
+     */
+    public static String BD_neworderlist = "https://wmcrm.baidu.com/crm?hhs=secure&qt=neworderlist&display=json";
 }

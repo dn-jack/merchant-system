@@ -93,9 +93,9 @@ public class HttpsRequestUtil {
                 retJo.put("result", rsp);
                 headerMap = conn.getHeaderFields();
                 
-                for (String key1 : headerMap.keySet()) {
-                    log.info(key1 + "--->" + headerMap.get(key1));
-                }
+                //                for (String key1 : headerMap.keySet()) {
+                //                    log.info(key1 + "--->" + headerMap.get(key1));
+                //                }
                 
                 if (JsonUtil.isBlank(rsp)) {
                     retJo.put("Location", headerMap.get("Location").get(0));

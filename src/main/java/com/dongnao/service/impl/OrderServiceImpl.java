@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
             aod.setPlatformType(JsonUtil.getString(paramJo, "platform_type"));
             aod.setBookedTime(booktime);
             aod.setConsigneeName(JsonUtil.getString(paramJo, "consignee_name"));
-            aod.setActiveTime(active_time);
+            aod.setActiveTime(JsonUtil.getString(paramJo, "orderTime"));
             aod.setActiveTotal(JsonUtil.getBigDecimal(paramJo, "active_total"));
             aod.setActivitiesSubsidyBymerchant(JsonUtil.getBigDecimal(paramJo,
                     "activities_subsidy_bymerchant"));
@@ -145,8 +145,12 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         
-        int ordercount = om.saveOrders(aods);
-        int dishcount = om.saveDishess(goods);
+        if (aods.size() > 0) {
+            int ordercount = om.saveOrders(aods);
+        }
+        if (goods.size() > 0) {
+            int dishcount = om.saveDishess(goods);
+        }
         
         JSONObject reJo = new JSONObject();
         reJo.put("respCode", "0000");

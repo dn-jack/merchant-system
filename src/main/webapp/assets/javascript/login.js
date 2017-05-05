@@ -91,14 +91,24 @@ $(function() {
 								var baiduShops = [];
 								
 								for(var i = 0 ;i < response.result.length; i++) {
-									if(response.result[i].elmId != null && response.result[i].elmId != '') {
-										elemShops.push(response.result[i].elmId);
+									if(response.result[i].elmUsername != null && response.result[i].elmUsername != '') {
+										var obj = new Object();
+										obj.elmUsername = response.result[i].elmUsername;
+										obj.elmPwd = response.result[i].elmPwd;
+										obj.shopId = response.result[i].elmId;
+										elemShops.push(obj);
 									}
 									if(response.result[i].meituanId != null && response.result[i].meituanId != '') {
-										meituanShops.push(response.result[i].meituanId);
+										var obj = new Object();
+										obj.meituanId = response.result[i].meituanId;
+										obj.meituanPwd = response.result[i].meituanPwd;
+										meituanShops.push(obj);
 									}
 									if(response.result[i].baiduId != null && response.result[i].baiduId != '') {
-										baiduShops.push(response.result[i].baiduId);
+										var obj = new Object();
+										obj.baiduId = response.result[i].baiduId;
+										obj.baidupwd = response.result[i].baidupwd;
+										baiduShops.push(obj);
 									}
 								}
 								
@@ -107,15 +117,15 @@ $(function() {
 								
 								if(elemShops.length > 0) {
 									shopIds.elemShops = elemShops;
-									localStorage.setItem("elemShops", elemShops);
+									localStorage.setItem("elemShops", JSON.stringify(elemShops));
 								}
 								if(meituanShops.length > 0) {
 									shopIds.meituanShops = meituanShops;
-									localStorage.setItem("meituanShops", meituanShops);
+									localStorage.setItem("meituanShops", JSON.stringify(meituanShops));
 								}
 								if(baiduShops.length > 0) {
 									shopIds.baiduShops = baiduShops;
-									localStorage.setItem("baiduShops", baiduShops);
+									localStorage.setItem("baiduShops", JSON.stringify(baiduShops));
 								}
 								localStorage.setItem("shopIds", JSON.stringify(shopIds));
 								
@@ -151,7 +161,7 @@ $(function() {
 	if(rmb){
 		//获取cookie的值
 		var username = localStorage.getItem("username");
-		var passwords = localStorage.getItem("username");
+		var passwords = localStorage.getItem("password");
 		//将获取的值填充入输入框中
 		$('[name=username]').val(username);
 		$('[name=password]').val(passwords);
