@@ -108,6 +108,11 @@ public class AccountOrderDetail {
     private BigDecimal platformDistCharge;
     
     /**
+     * 平台收取配送费order_dist_charge
+     **/
+    private BigDecimal orderDistCharge;
+    
+    /**
      * 服务费费率
      **/
     private String serviceRate;
@@ -737,6 +742,14 @@ public class AccountOrderDetail {
     
     public void setSpecialOffer(BigDecimal specialOffer) {
         this.specialOffer = specialOffer;
+    }
+    
+    public BigDecimal getOrderDistCharge() {
+        return orderDistCharge;
+    }
+    
+    public void setOrderDistCharge(BigDecimal orderDistCharge) {
+        this.orderDistCharge = orderDistCharge;
     }
     
 }

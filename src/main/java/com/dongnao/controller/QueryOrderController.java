@@ -325,7 +325,12 @@ public class QueryOrderController {
                 JsonUtil.getString(jo, "goodsTotalWithoutPackage"));
         fixJo.put("state", "0");
         fixJo.put("merchantName", JsonUtil.getString(jo, "shopName"));
-        fixJo.put("orderType", JsonUtil.getString(jo, "orderType"));
+        String orderType = JsonUtil.getString(jo, "orderType");
+        if ("BOOKING_UNPROCESSED".equals(orderType)) {
+            orderType = "BOOKING";
+        }
+        fixJo.put("orderType", orderType);
+        
         fixJo.put("merchantActivityPart",
                 JsonUtil.getString(jo, "merchantActivityPart"));
         fixJo.put("elemeActivityPart",
@@ -333,8 +338,8 @@ public class QueryOrderController {
         fixJo.put("serviceFee", JsonUtil.getString(jo, "serviceFee"));
         fixJo.put("serviceRate", JsonUtil.getString(jo, "serviceRate"));
         
-        fixJo.put("platform_dist_charge",
-                JsonUtil.getString(jo, "deliveryFeeTotal"));
+        //        fixJo.put("platform_dist_charge",
+        //                JsonUtil.getString(jo, "deliveryFeeTotal"));
         fixJo.put("settlement_amount", JsonUtil.getString(jo, "income"));
         fixJo.put("distribution_mode",
                 JsonUtil.getString(jo, "deliveryServiceType"));
@@ -349,6 +354,48 @@ public class QueryOrderController {
         fixJo.put("consigneeAddress",
                 JsonUtil.getString(jo, "consigneeAddress"));
         fixJo.put("distance", JsonUtil.getString(jo, "distance"));
+        
+        //20170508新增
+        fixJo.put("merchant_activities_subsidies",
+                JsonUtil.getString(jo, "restaurantPart"));
+        if (JsonUtil.isNotBlank(jo.get("merchantActivities"))) {
+            JSONArray merchantActivities = jo.getJSONArray("merchantActivities");
+            double amount = 0.0;
+            for (Object o : merchantActivities) {
+                JSONObject merchantActivitieJo = (JSONObject)o;
+                if ("商家代金券抵扣".equals(merchantActivitieJo.getString("name")
+                        .trim())) {
+                    amount += merchantActivitieJo.getDouble("amount");
+                }
+                else if ("红包抵扣".equals(merchantActivitieJo.getString("name")
+                        .trim())) {
+                    amount += merchantActivitieJo.getDouble("amount");
+                }
+            }
+            fixJo.put("merchant_subsidy_vouchers", amount);
+        }
+        String deliveryServiceType = JsonUtil.getString(jo,
+                "deliveryServiceType");
+        if ("CROWD".equals(deliveryServiceType)) {
+            fixJo.put("merchant_dist_charge",
+                    JsonUtil.getString(jo, "deliveryFeeTotal"));
+        }
+        else {
+            fixJo.put("merchant_dist_charge", "0");
+        }
+        
+        if ("CONTROLLED".equals(deliveryServiceType)) {
+            fixJo.put("platform_dist_charge",
+                    JsonUtil.getString(jo, "deliveryFeeTotal"));
+        }
+        else {
+            fixJo.put("platform_dist_charge", "0");
+        }
+        fixJo.put("distribution_mode",
+                JsonUtil.getString(jo, "deliveryServiceType"));
+        fixJo.put("platform_activities_subsidies",
+                JsonUtil.getString(jo, "elemeActivityPart"));
+        //20170508新增
         return fixJo;
     }
     
@@ -513,9 +560,7 @@ public class QueryOrderController {
     private JSONObject mtfixData(JSONObject jo, JSONObject chargeJo,
             String userName) {
         JSONObject fixJo = new JSONObject();
-        fixJo.put("orderTime",
-                dateParse(Long.parseLong(JsonUtil.getLong(jo, "order_time")
-                        + "000")));
+        fixJo.put("orderTime", JsonUtil.getString(jo, "order_time_fmt"));
         fixJo.put("orderNo", JsonUtil.getString(jo, "wm_order_id_view_str"));
         fixJo.put("userName", JsonUtil.getString(jo, "recipient_name"));
         fixJo.put("phone", JsonUtil.getString(jo, "recipient_phone"));
@@ -551,7 +596,9 @@ public class QueryOrderController {
             fixJo.put("dishes", dishesJa);
         }
         fixJo.put("boxPrice", JsonUtil.getString(jo, "boxPriceTotal"));
-        fixJo.put("orderPrice", JsonUtil.getString(jo, "total_before"));
+        fixJo.put("orderPrice",
+                chargeJo.getInteger("foodAmount")
+                        - jo.getInteger("boxPriceTotal"));
         fixJo.put("state", "0");
         fixJo.put("merchantName", JsonUtil.getString(jo, "poi_name"));
         fixJo.put("platform_type", "mt");
@@ -561,35 +608,86 @@ public class QueryOrderController {
         fixJo.put("distance", JsonUtil.getString(jo, "distance"));
         fixJo.put("remark", JsonUtil.getString(jo, "remark"));
         
-        boolean riderPay = JsonUtil.getBoolean(chargeJo, "riderPay");
-        if (riderPay) {
-            fixJo.put("platform_dist_charge",
-                    JsonUtil.getString(chargeJo, "shippingAmount"));
-            fixJo.put("distribution_mode", "CROWD");
-        }
-        else {
-            fixJo.put("merchant_dist_charge",
-                    JsonUtil.getString(jo, "shipping_fee"));
-            fixJo.put("distribution_mode", "NONE");
-        }
-        if (JsonUtil.isNotBlank(chargeJo.get("commisionDetails"))) {
-            fixJo.put("serviceFee",
-                    JsonUtil.getString(chargeJo.getJSONArray("commisionDetails")
-                            .getJSONObject(0),
-                            "chargeAmount"));
-        }
-        String status = JsonUtil.getString(jo, "remark");
+        //        boolean riderPay = JsonUtil.getBoolean(chargeJo, "riderPay");
+        //        if (riderPay) {
+        //            fixJo.put("platform_dist_charge",
+        //                    JsonUtil.getString(chargeJo, "shippingAmount"));
+        //            fixJo.put("distribution_mode", "CROWD");
+        //        }
+        //        else {
+        //            fixJo.put("merchant_dist_charge",
+        //                    JsonUtil.getString(jo, "shipping_fee"));
+        //            fixJo.put("distribution_mode", "NONE");
+        //        }
+        //        if (JsonUtil.isNotBlank(chargeJo.get("commisionDetails"))) {
+        //            fixJo.put("serviceFee",
+        //                    JsonUtil.getString(chargeJo.getJSONArray("commisionDetails")
+        //                            .getJSONObject(0),
+        //                            "chargeAmount"));
+        //        }
+        String status = JsonUtil.getString(jo, "status");
         if ("2".equals(status)) {
+            fixJo.put("orderLatestStatus", "等待接单");
+        }
+        else if ("4".equals(status)) {
             fixJo.put("orderLatestStatus", "等待配送");
         }
         else if ("8".equals(status)) {
             fixJo.put("orderLatestStatus", "用户已确认收餐");
+        }
+        else if ("9".equals(status)) {
+            fixJo.put("orderLatestStatus", "订单取消");
         }
         else {
             fixJo.put("orderLatestStatus", "等待配送");
         }
         fixJo.put("activities_subsidy_bymerchant", jo.getDouble("total_before")
                 - jo.getDouble("total_after"));
+        
+        //20170508新增
+        fixJo.put("orderType", JsonUtil.getString(jo, "orderCopyContent")
+                .contains("预订单") ? "BOOKING" : "NORMAL");
+        fixJo.put("merchant_activities_subsidies",
+                JsonUtil.getString(chargeJo, "activityAmount"));
+        String shippingType = JsonUtil.getString(chargeJo, "shippingType");
+        if ("0000".equals(shippingType)) {
+            fixJo.put("merchant_dist_charge",
+                    JsonUtil.getString(chargeJo, "shippingAmount"));
+        }
+        else {
+            fixJo.put("merchant_dist_charge", "0");
+        }
+        
+        if ("1001".equals(shippingType)) {
+            fixJo.put("platform_dist_charge",
+                    JsonUtil.getString(chargeJo, "shippingAmount"));
+            fixJo.put("order_dist_charge ",
+                    JsonUtil.getString(chargeJo, "shippingAmount"));
+        }
+        else {
+            fixJo.put("merchant_dist_charge", "0");
+            fixJo.put("order_dist_charge ", "0");
+        }
+        fixJo.put("serviceFee", JsonUtil.getString(chargeJo, "commisionAmount"));
+        fixJo.put("settlement_amount",
+                JsonUtil.getString(chargeJo, "settleAmount"));
+        fixJo.put("distribution_mode",
+                JsonUtil.getString(chargeJo, "shippingType"));
+        if (JsonUtil.isNotBlank(jo.get("discounts"))) {
+            double infocount = 0.0;
+            JSONArray discounts = jo.getJSONArray("discounts");
+            for (Object o : discounts) {
+                JSONObject discountJo = (JSONObject)o;
+                String info = JsonUtil.getString(discountJo, "info");
+                infocount += Double.valueOf(info.substring(info.indexOf("￥") + 1));
+            }
+            fixJo.put("platform_activities_subsidies",
+                    infocount - chargeJo.getDouble("activityAmount"));
+        }
+        else {
+            fixJo.put("platform_activities_subsidies", 0);
+        }
+        //20170508新增
         return fixJo;
     }
     
@@ -679,7 +777,7 @@ public class QueryOrderController {
         fixOrder_basic(fixJo, jo);
         fixOrder_goods(fixJo, jo);
         fixorder_meal_fee(fixJo, jo);
-        fixorder_total(fixJo, jo);
+        //        fixorder_total(fixJo, jo);
         fixJo.put("state", "0");
         
         fixJo.put("platform_type", "bdwm");
@@ -773,6 +871,7 @@ public class QueryOrderController {
             return;
         }
         JSONArray dishesJa = new JSONArray();
+        double origCount = 0.0;
         for (Object o : goods_list) {
             JSONObject good = (JSONObject)o;
             JSONObject dishJo = new JSONObject();
@@ -783,8 +882,10 @@ public class QueryOrderController {
             dishJo.put("price2", JsonUtil.getString(good, "orig_unit_price"));
             dishJo.put("goods_id", "");
             dishJo.put("goods_price", JsonUtil.getString(good, "orig_price"));
+            origCount += good.getDouble("orig_price");
             dishesJa.add(dishJo);
         }
+        fixJo.put("orderPrice", origCount);
         fixJo.put("dishes", dishesJa);
     }
     
@@ -809,6 +910,8 @@ public class QueryOrderController {
                 JsonUtil.getString(order_basic, "user_address"));
         fixJo.put("distance",
                 JsonUtil.getString(order_basic, "shop_user_distance"));
+        fixJo.put("orderType", JsonUtil.getString(order_basic, "send_time")
+                .indexOf("立即送餐") > -1 ? "NORMAL" : "BOOKING");
     }
     
     public static void main(String[] args) throws Exception {
@@ -829,41 +932,42 @@ public class QueryOrderController {
         //        System.out.print(new QueryOrderController().bdwmQueryOrder(null,
         //                param3.toString()));
         
-        JSONObject countJo = ElemeUtil.countOrderJo();
-        JSONObject queryJo = ElemeUtil.queryOrderJo();
-        countJo.getJSONObject("metas").put("ksid",
-                "YjgzYmRmNmYtZjNjZS00MjVmLWJlNmYzE2Yj");
-        countJo.getJSONObject("params").put("shopId", 2357016);
-        //                    countJo.getJSONObject("params")
-        //                            .getJSONObject("condition")
-        //                            .put("beginTime", aaa + "T00:00:00");
-        //                    countJo.getJSONObject("params")
-        //                            .getJSONObject("condition")
-        //                            .put("endTime", aaa + "T23:59:59");
-        log.info(countJo.toJSONString());
-        String countRe = HttpsRequestUtil.doPost(ElemeUtil.countOrderurl,
-                countJo.toString(),
-                "UTF-8",
-                300000,
-                300000);
-        log.info(countRe);
-        JSONObject count = JSON.parseObject(countRe);
-        if (count.containsKey("result")) {
-            queryJo.getJSONObject("params")
-                    .getJSONObject("condition")
-                    .put("limit", count.getInteger("result"));
-        }
-        
-        queryJo.getJSONObject("params").put("shopId", 2357016);
-        queryJo.getJSONObject("metas").put("ksid",
-                "YjgzYmRmNmYtZjNjZS00MjVmLWJlNmYzE2Yj");
-        String queryRe = HttpsRequestUtil.doPost(ElemeUtil.queryOrderurl,
-                queryJo.toString(),
-                "UTF-8",
-                300000,
-                300000);
-        //            String queryRe = HttpRequest.sendPost(ElemeUtil.queryOrderurl, "");
-        
-        log.info("---------------饿了么queryOrderurl饿了么----------------" + queryRe);
+        //        JSONObject countJo = ElemeUtil.countOrderJo();
+        //        JSONObject queryJo = ElemeUtil.queryOrderJo();
+        //        countJo.getJSONObject("metas").put("ksid",
+        //                "YjgzYmRmNmYtZjNjZS00MjVmLWJlNmYzE2Yj");
+        //        countJo.getJSONObject("params").put("shopId", 2357016);
+        //        //                    countJo.getJSONObject("params")
+        //        //                            .getJSONObject("condition")
+        //        //                            .put("beginTime", aaa + "T00:00:00");
+        //        //                    countJo.getJSONObject("params")
+        //        //                            .getJSONObject("condition")
+        //        //                            .put("endTime", aaa + "T23:59:59");
+        //        log.info(countJo.toJSONString());
+        //        String countRe = HttpsRequestUtil.doPost(ElemeUtil.countOrderurl,
+        //                countJo.toString(),
+        //                "UTF-8",
+        //                300000,
+        //                300000);
+        //        log.info(countRe);
+        //        JSONObject count = JSON.parseObject(countRe);
+        //        if (count.containsKey("result")) {
+        //            queryJo.getJSONObject("params")
+        //                    .getJSONObject("condition")
+        //                    .put("limit", count.getInteger("result"));
+        //        }
+        //        
+        //        queryJo.getJSONObject("params").put("shopId", 2357016);
+        //        queryJo.getJSONObject("metas").put("ksid",
+        //                "YjgzYmRmNmYtZjNjZS00MjVmLWJlNmYzE2Yj");
+        //        String queryRe = HttpsRequestUtil.doPost(ElemeUtil.queryOrderurl,
+        //                queryJo.toString(),
+        //                "UTF-8",
+        //                300000,
+        //                300000);
+        //        //            String queryRe = HttpRequest.sendPost(ElemeUtil.queryOrderurl, "");
+        //        
+        //        log.info("---------------饿了么queryOrderurl饿了么----------------" + queryRe);
+        log.info("-￥10.0".substring("-￥10.0".indexOf("￥") + 1));
     }
 }

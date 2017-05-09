@@ -80,10 +80,10 @@ public class OrderServiceImpl implements OrderService {
             aod.setPrices(JsonUtil.getBigDecimal(paramJo, "orderPrice"));
             aod.setOrginPrice(JsonUtil.getBigDecimal(paramJo, "orderPrice"));
             aod.setMealFee(JsonUtil.getBigDecimal(paramJo, "boxPrice"));
-            aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
-                    "merchantActivityPart"));
-            aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
-                    "elemeActivityPart"));
+            //            aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+            //                    "merchantActivityPart"));
+            //            aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+            //                    "elemeActivityPart"));
             aod.setServiceCharge(JsonUtil.getBigDecimal(paramJo, "serviceFee"));
             aod.setServiceRate(JsonUtil.getString(paramJo, "serviceRate"));
             
@@ -106,6 +106,19 @@ public class OrderServiceImpl implements OrderService {
                     "activities_subsidy_bymerchant"));
             aod.setConsigneeAddress(JsonUtil.getString(paramJo,
                     "consigneeAddress"));
+            
+            //20170508新增
+            aod.setOrderIndex(JsonUtil.getString(paramJo, "platformCount"));
+            aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+                    "merchant_activities_subsidies"));
+            aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+                    "platform_activities_subsidies"));
+            aod.setOrderDistCharge(JsonUtil.getBigDecimal(paramJo,
+                    "platform_dist_charge"));
+            aod.setMerchantSubsidyVouchers(JsonUtil.getBigDecimal(paramJo,
+                    "merchant_subsidy_vouchers"));
+            aod.setIsInvalid(JsonUtil.getString(paramJo, "is_invalid"));
+            //新增结束
             
             StringBuffer goodsName = new StringBuffer();
             StringBuffer goods_quality = new StringBuffer();
@@ -195,10 +208,10 @@ public class OrderServiceImpl implements OrderService {
         aod.setPrices(JsonUtil.getBigDecimal(paramJo, "orderPrice"));
         aod.setOrginPrice(JsonUtil.getBigDecimal(paramJo, "orderPrice"));
         aod.setMealFee(JsonUtil.getBigDecimal(paramJo, "boxPrice"));
-        aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
-                "merchantActivityPart"));
-        aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
-                "elemeActivityPart"));
+        //        aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+        //                "merchantActivityPart"));
+        //        aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+        //                "elemeActivityPart"));
         aod.setServiceCharge(JsonUtil.getBigDecimal(paramJo, "serviceFee"));
         aod.setServiceRate(JsonUtil.getString(paramJo, "serviceRate"));
         
@@ -219,6 +232,19 @@ public class OrderServiceImpl implements OrderService {
         aod.setActivitiesSubsidyBymerchant(JsonUtil.getBigDecimal(paramJo,
                 "activities_subsidy_bymerchant"));
         aod.setConsigneeAddress(JsonUtil.getString(paramJo, "consigneeAddress"));
+        
+        //20170508新增 order_dist_charge
+        aod.setOrderIndex(JsonUtil.getString(paramJo, "platformCount"));
+        aod.setMerchantActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+                "merchant_activities_subsidies"));
+        aod.setPlatformActivitiesSubsidies(JsonUtil.getBigDecimal(paramJo,
+                "platform_activities_subsidies"));
+        aod.setOrderDistCharge(JsonUtil.getBigDecimal(paramJo,
+                "platform_dist_charge"));
+        aod.setMerchantSubsidyVouchers(JsonUtil.getBigDecimal(paramJo,
+                "merchant_subsidy_vouchers"));
+        aod.setIsInvalid(JsonUtil.getString(paramJo, "is_invalid"));
+        //新增结束
         
         StringBuffer goodsName = new StringBuffer();
         StringBuffer goods_quality = new StringBuffer();

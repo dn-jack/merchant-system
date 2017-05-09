@@ -69,7 +69,7 @@
 		<if test="activeTime != null and activeTime != ''">
 	active_time,
 		</if>
-	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr)
+	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr,order_index,merchant_subsidy_vouchers,order_dist_charge,is_invalid)
 		values (
 		<if test="createDate != null and createDate != ''">
 		str_to_date(#{createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),
@@ -88,7 +88,7 @@
 		<if test="activeTime != null and activeTime != ''">
 		#{activeTime},
 		</if>
-		#{activeTotal},#{goodsName},#{goodsQuality},#{goodsId},#{goodsPrice},#{consigneeAddress,jdbcType=VARCHAR})
+		#{activeTotal},#{goodsName},#{goodsQuality},#{goodsId},#{goodsPrice},#{consigneeAddress,jdbcType=VARCHAR},#{orderIndex},#{merchantSubsidyVouchers},#{orderDistCharge},#{isInvalid})
 	</insert>
 	
 	<select id="queryOrder" parameterType="java.util.Map" resultType="java.util.Map">
@@ -119,7 +119,7 @@
 
 	consignee_name,
 	active_time,
-	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr)
+	active_total,goods_name,goods_quality,goods_id,goods_price,target_addr,order_index,merchant_subsidy_vouchers,order_dist_charge,is_invalid)
 	<foreach collection="list" item="item" index="index" separator="union all">
 		select 
 		str_to_date(#{item.createDate,jdbcType=VARCHAR},'%Y-%m-%d %T'),
@@ -130,7 +130,7 @@
 		,#{item.platformDistCharge},#{item.settlementAmount},#{item.distributionMode},#{item.remark},#{item.platformType},
 		#{item.consigneeName},
 		#{item.activeTime},
-		#{item.activeTotal},#{item.goodsName},#{item.goodsQuality},#{item.goodsId},#{item.goodsPrice},#{item.consigneeAddress,jdbcType=VARCHAR} from dual
+		#{item.activeTotal},#{item.goodsName},#{item.goodsQuality},#{item.goodsId},#{item.goodsPrice},#{item.consigneeAddress,jdbcType=VARCHAR},#{item.orderIndex},#{item.merchantSubsidyVouchers},#{item.orderDistCharge},#{item.isInvalid} from dual
 	</foreach>
 	</insert>
 	<!--
