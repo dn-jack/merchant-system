@@ -43,6 +43,7 @@ import com.dongnao.util.ElemeUtil;
 import com.dongnao.util.HttpRequest;
 import com.dongnao.util.HttpsRequestUtil;
 import com.dongnao.util.JsonUtil;
+import com.dongnao.util.MD5Encryption;
 import com.dongnao.util.Prient;
 import com.dongnao.util.SpringContextHolder;
 import com.dongnao.util.UrlUtil;
@@ -97,6 +98,28 @@ public class OrderController {
             return mtUserLogin(paramJo);
         }
         return null;
+    }
+    
+    @RequestMapping("/orderCount")
+    public @ResponseBody String orderCount(HttpServletRequest request,
+            HttpServletResponse response, @RequestBody String param) {
+        
+        JSONObject paramJo = JSON.parseObject(param);
+        
+        String password = paramJo.getString("password").trim();
+        paramJo.remove("password");
+        paramJo.put("password", MD5Encryption.MD5(password));
+        
+        String retStr = HttpRequest.sendPostxx(UrlUtil.countUrl,
+                paramJo.toString());
+        JSONObject retJo = new JSONObject();
+        
+        if (JsonUtil.isBlank(retStr)) {
+            retJo.put("respCode", "9999");
+            retJo.put("respDesc", "请求失败!");
+            return retJo.toString();
+        }
+        return retStr;
     }
     
     private void insertToMongodb(String key, String value) {

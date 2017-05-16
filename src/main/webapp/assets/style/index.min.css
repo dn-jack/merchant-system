@@ -224,6 +224,9 @@ body {
 .datetimepicker table tr td.active.disabled:hover.active {
   background: #F47115;
 }
+.datetimepicker table tr td.active:active, .datetimepicker table tr td.active:hover:active, .datetimepicker table tr td.active.disabled:active, .datetimepicker table tr td.active.disabled:hover:active, .datetimepicker table tr td.active.active, .datetimepicker table tr td.active:hover.active, .datetimepicker table tr td.active.disabled.active, .datetimepicker table tr td.active.disabled:hover.active{
+	background: #F47115;
+}
 .theme-form-input {
   line-height: 32px;
   border-radius: 4px;
@@ -312,7 +315,7 @@ header .user-info .btn-group ul.dropdown-menu {
   height: 100%;
   position: relative;
 }
-.wrapper .container-fluid .row {
+.wrapper .container-fluid>.row {
   margin-top: 20px;
 }
 .wrapper .left-full {
@@ -819,7 +822,7 @@ header .user-info .btn-group ul.dropdown-menu {
   border-bottom: 1px solid #cecece;
 }
 .order-search-page .col-md-3 .panel h6:last-of-type {
-  margin-top: 40px;
+ 
 }
 .order-search-page .col-md-3 .panel ul {
   margin-top: 10px;
@@ -1488,4 +1491,121 @@ footer {
   .order-search-page .filter tr td .date-form input.mobile-date {
   	display: none;
   }
+}
+
+
+/*home style*/
+
+ .order-num .row{
+ 	background: white;
+ 	margin-right: 0px; 
+    margin-left: 0px; 
+ }
+ .order-num .row .title {
+ 	text-align: left;
+ 	border-bottom: 1px solid #ccc;
+ 	vertical-align: top;
+ }
+
+.order-num .row .title h4 {
+  	text-align: left;
+  	padding-left: 10px;
+  	height: 50px;
+  	line-height: 50px;
+  	
+}
+.order-num .row .title label {
+	font-size: 14px;
+}
+.order-num .row .title span {
+	float: left;
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	display: inline-block;
+	
+}
+.order-num .row .title.mt span {
+	color: #42E452;
+}
+
+.order-num .row .title.bdwm span { 
+	color: red;
+}
+.order-num .row .title.elm span { 
+	color: #359BF5;
+}
+.order-num .row .title i {
+	font-size: 30px;
+	
+}
+.order-num .row h3{
+	padding: 30px 0px 10px 0px;
+	font-size: 30px;
+	color: #F47115;
+}
+.order-num .row p {
+	margin-bottom: 20px;
+}
+
+.search-time {
+	display: flex;
+	padding: 20px;
+	background: white;
+	height: 80px;	
+}
+.search-time h5 {
+	line-height: 34px;
+	padding-right: 10px;
+	width: 70px;
+}
+.search-time .form-control {
+	width: 200px;
+}
+
+.order-num {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+}
+.order-num .search-time {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+}
+.scroll-num {
+	position: absolute;
+	overflow-y: scroll;
+	left: 20px;
+	top: 100px;
+	bottom: 0px;
+	right: 20px;
+}
+.scroll-num .row {
+	margin-bottom: 20px;
+}
+
+.mobile-control {
+	display: none;
+}
+
+
+.order-num .row.store div:last-child h3{ 
+	color:  #777777;
+}
+.order-num .row.store div:nth-child(4) h3{ 
+	color:  #777777;
+}
+
+.order-num .row.allNum h3 {
+	font-size: 40px;
+}
+
+
+.order-search-page .col-md-3 .panel {
+	border-radius: 0px;
 }

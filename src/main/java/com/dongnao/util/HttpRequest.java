@@ -354,6 +354,59 @@ public class HttpRequest {
         return result;
     }
     
+    public static String sendPostxx(String url, String param) {
+        PrintWriter out = null;
+        BufferedReader in = null;
+        String result = "";
+        try {
+            URL realUrl = new URL(url);
+            // 鎵撳紑鍜孶RL涔嬮棿鐨勮繛鎺�
+            URLConnection conn = realUrl.openConnection();
+            // 璁剧疆閫氱敤鐨勮姹傚睘鎬�
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("user-agent",
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            conn.setRequestProperty("Content-Type",
+                    "application/json; charset=utf-8");
+            // 鍙戦�POST璇锋眰蹇呴』璁剧疆濡備笅涓よ
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            // 鑾峰彇URLConnection瀵硅薄瀵瑰簲鐨勮緭鍑烘祦
+            out = new PrintWriter(conn.getOutputStream());
+            // 鍙戦�璇锋眰鍙傛暟
+            out.print(param);
+            // flush杈撳嚭娴佺殑缂撳啿
+            out.flush();
+            // 瀹氫箟BufferedReader杈撳叆娴佹潵璇诲彇URL鐨勫搷搴�
+            in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        }
+        catch (Exception e) {
+            //            System.out.println("鍙戦� POST 璇锋眰鍑虹幇寮傚父锛� + e);
+            e.printStackTrace();
+        }
+        //浣跨敤finally鍧楁潵鍏抽棴杈撳嚭娴併�杈撳叆娴�
+        finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+    
     public static String bdsendPost(String url, String param, String cookies,
             String tracecode, String P3P) {
         PrintWriter out = null;

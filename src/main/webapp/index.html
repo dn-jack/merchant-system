@@ -9,8 +9,21 @@
 		<meta name="Description" content=""/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <link rel="stylesheet" href="assets/plug/bootstrap-3.3.0/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/plug/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css"/>
         <link rel="stylesheet" href="assets/style/index.min.css">
         <link rel="stylesheet" media="screen and (max-width: 720px)" href="assets/style/mobile.css">
+        <link rel="stylesheet" type="text/css" href="http://at.alicdn.com/t/font_spm7nssce1xlxr.css"/>
+        <style>
+        	.search-time .form-control {
+        		border-radius: 0px;
+        	}
+        	.search-time .form-control{
+        	    border-color: #ccc;
+			    outline: 0;
+			    -webkit-box-shadow: inherit;
+			    box-shadow: inherit;
+        	}
+        </style>	
     </head>
     <body>
         <header>
@@ -29,8 +42,8 @@
                 <div class="col-md-4">
                     <div class="user-info">
                         <div class="btn-group">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span id="userName">james</span> <span class="caret"></span>
+                          <button type="button" id="userName" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            james <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu">
                             <li><a href="#">退出</a></li>
@@ -71,119 +84,69 @@
         	        </a>
         	      </li>
         	       <li>
-        	        <a href="javascript:;" data-href="help.html">
+        	        <a href="javascript:;" data-href="login.html">
         	          <span class=""><i class="iconfont">&#xe609;</i>退出</span>
         	        </a>
         	      </li>
         	    </ul>
             </div>
             <div class="left-full">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="plan">
-                                <div class="plan-title clearfix">
-                                    <h6>待处理的订单</h6>
-                                    <a href="#">处理订单</a>
-                                </div>
-                                <div class="row order">
-                                    <div class="col-md-3 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>新订单</p>
-                                    </div>
-                                    <div class="col-md-3 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>异常订单</p>
-                                    </div>
-                                    <div class="col-md-3 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>催单</p>
-                                    </div>
-                                    <div class="col-md-3 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>退单</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 order-control">
-                            <div class="plan">
-                                <div class="plan-title clearfix">
-                                    <h6>待处理的订单</h6>
-                                    <a href="#">处理订单</a>
-                                </div>
-                                <div class="row couple-back">
-                                    <div class="col-md-6 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>新订单</p>
-                                    </div>
-                                    <div class="col-md-6 col-xs-6 text-center">
-                                        <h1>10</h1>
-                                        <p>异常订单</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="plan ">
-                                <div class="plan-title clearfix">
-                                    <h6>今日总览</h6>
-                                    <a href="#">数据中心</a>
-                                </div>
-                                <div class="row today">
-                                    <div class="col-md-6 text-center">
-                                        <span>订单</span>
-                                        <h1>10</h1>
-                                        <p>昨日20单</p>
-                                    </div>
-                                    <div class="col-md-6 text-center">
-                                        <span>营业额</span>
-                                        <h1>10234.55</h1>
-                                        <p>昨日4452.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 order-control">
-                            <div class="plan">
-                                <div class="plan-title clearfix">
-                                    <h6>通知中心</h6>
-                                    <a href="#">全部通知</a>
-                                </div>
-                                <ul class="inform">
-                                    <li>
-                                        <a class="clearfix" href="#"><span class="ell" style="width: 200px;">数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据</span><label>01-09</label></a>
-                                    </li>
-                                    <li>
-                                        <a class="clearfix" href="#"><span class="ell" style="width: 200px;">数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据</span><label>01-09</label></a>
-                                    </li>
-                                     <li>
-                                        <a class="clearfix" href="#"><span class="ell" style="width: 200px;">数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据</span><label>01-09</label></a>
-                                    </li>
-                                     <li>
-                                        <a class="clearfix" href="#"><span class="ell" style="width: 200px;">数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据</span><label>01-09</label></a>
-                                    </li>
-                                     <li>
-                                        <a class="clearfix" href="#"><span class="ell" style="width: 200px;">数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据数据系统设计期间分数据</span><label>01-09</label></a>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <div class="container-fluid order-num" id="order-num">
+                		<div class="search-time">
+                			<h5>时间搜索</h5>
+                			<input id="datetimepicker" class="form-control pc-control" data-date-format="yyyy-mm-dd" placeholder="时间" type="" name="" id="" value="" />
+                			<input @change="dateChange"  v-model="mobileDate" :value="defaultsValue" class="form-control mobile-control" type="date" name="" id="" value="" />
+                		</div>
+                		<div class="scroll-num">
+                			<div class="row text-center allNum">
+							<div class="title">
+								<h4>今日订单总览</h4></div>
+							<div class="col-md-6">
+								<h3 class="timer count-number-to"   >{{successOrderNumber}}</h3>
+								<p>成功订单数量</p>
+							</div>
+							<div class="col-md-6">
+								<h3 class="timer count-number"   >{{successOrderPrice}}</h3>
+								<p>成功订单总额</p>
+							</div>
+							
+						</div>
+						<div v-for="item in items" class="row text-center store">
+							<div class="title " v-bind:class="item.platformType"><span><i class="iconfont" :class="platformTypes[item.platformType]"></i></span>
+								<h4>{{item.storeName}} <label for="">（ {{platformStr[item.platformType]}} ）</label></h4> </div>
+							<div class="col-md-3">
+								<h3 class="timer count-number-to"   >{{item.successOrderNum}}</h3>
+								<p>成功订单数量</p>
+							</div>
+							<div class="col-md-3">
+								<h3 class="timer count-number"  >{{item.successOrderAmount}}</h3>
+								<p>成功订单总额</p>
+							</div>
+							<div class="col-md-3">
+								<h3  class="timer count-number-to"  >{{item.failOrderNum}}</h3>
+								<p>失败订单数</p>
+							</div>
+							<div class="col-md-3">
+								<h3  class="timer count-number"  >{{item.failOrderAmount}}</h3>
+								<p>失败订单总额</p>
+							</div>
+						</div>
+						
+                		</div>
                 </div>
-
             </div>
         </div>
         <div class="mask-mobile"></div>
         <script src="assets/plug/jquery/jquery-2.2.4.js" charset="utf-8"></script>
         <script src="assets/plug/bootstrap-3.3.0/js/bootstrap.min.js" charset="utf-8"></script>
+        <script src="assets/plug/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="assets/plug/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
         <script src="assets/javascript/index.js" charset="utf-8"></script>
+        <script src="assets/plug/jq-size/jq-size.js" type="text/javascript" charset="utf-8"></script>
+        <script src="assets/plug/template/vue.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="assets/javascript/home.js" charset="utf-8"></script>
         <script type="text/javascript">
-            $("#menu").sidenav();
+        		$("#menu").sidenav();
         </script>
     </body>
 </html>

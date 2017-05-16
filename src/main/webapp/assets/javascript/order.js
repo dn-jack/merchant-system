@@ -207,10 +207,8 @@ repeat = {};
 					});
 			this.$wol.on("click", ".order-bind .btn",
 					function() {
-						console.log($(this));
 						var $order = $(this).parents(".order-bind:first");
 						var bind = $order.data("bind");
-//						bind.channelType = 'PC';
 						$order.removeClass(that.opt.animateIn)
 							.addClass(that.opt.animateOut + ' animated')
 							.one('webkitAnimationEnd', function() {

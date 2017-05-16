@@ -3,6 +3,12 @@ package com.dongnao.util;
 public class UrlUtil {
     public static String login = "http://180.76.134.65:8080/dncyz/getShopId.do";
     
+    public static String countUrl = "http://180.76.134.65:8080/dncyz/config/calcuOrderDetail.do";
+    
+    //"http://192.168.90.107:8080/dncyz/config/calcuOrderDetail.do";
+    
+    //"http://180.76.134.65:8080/dncyz/config/calcuOrderDetail.do";
+    
     //            "http://180.76.134.65:8080/dncyz/getShopId.do";
     
     //            "http://192.168.90.101:8080/dncyz/getShopId.do";

@@ -125,7 +125,6 @@
 			return this.$ool.children("li").size() > 0;
 		},
 		emptyOrders : function(){
-			console.log(this.$ool.find(".print"))
 			this.$ool.find(".print").unbind("click");
 			this.$ool.empty();
 		},
@@ -198,15 +197,15 @@ $(function() {
   var $dateForm = $(".date-form");
 	var $dt  = $('#datetimepicker');
 	$dt.datetimepicker({
-        language: 'zh',
-        weekStart: 1,
-        todayBtn:  1,
-        autoclose: 1,
-        todayHighlight: 1,
-        startView: 2,
-        minView: 2,
-        forceParse: 0
-    });
+    language:  'zh-CN',  //日期
+    weekStart: 1,
+    todayBtn:  1,
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 2,
+    minView: 2,
+    forceParse: 0
+});
 	var date = null;
     $dt.datetimepicker().on('changeDate', function(ev){
     	date = getDate(ev.date);
@@ -285,3 +284,60 @@ $(".mobile-date").change(function(){
 	orderList.addQuery('beginTime', $(".mobile-date").val());
 	orderList.load();
 })
+
+
+$(function(){
+	var uname = localStorage.getItem("username");
+	var psword   = localStorage.getItem('password');
+	var searchDate   = getNowFormatDate();
+	var host = "order/orderCount";
+	var params = {
+		username: uname,
+		password: psword,
+		queryTime: searchDate
+	};
+	
+	$.ajax({
+		type: 'post',
+		url: host,
+		data : JSON.stringify(params),
+		cache : false,
+		dataType : "json",
+		async : false,
+		contentType : false,
+		success: function(response) {
+			if(response.respCode == "0000") {
+				processNum(response)
+				
+			} else {
+				//error()
+			}
+		}
+	});
+	function error(){
+		var _temp = '<p>数据获取失败</p>';
+		$('.order-survey').append(_temp);
+	}
+	function processNum( data ){
+		var _temp = [
+						'<div class="panel">',
+					    '<h6>今日订单概况</h6>',
+					    '<ul>',
+					    '<li>已接订单：'+ data.successOrderNum +'笔</li>',
+					    '<li>今日营业总额：'+ data.successOrderPrice +'元</li>',
+					    '</ul>',
+						'</div>'
+					].join('');
+		
+		$('.order-survey').append(_temp);
+	}
+	
+})
+
+
+
+
+
+
+
+

@@ -13,6 +13,7 @@
     init: function (self) {
       self.slideTag(self);
       this.mobileTag(self);
+      this.logoing(self);
     },
     mobileTag: function(self){
       $(".header-menu-mobile").on("click", function(){
@@ -22,6 +23,21 @@
       $(".mask-mobile").on("click", function(){
       	$(".header-menu-mobile").trigger("click");
       })
+    },
+    logoout: function(){
+    		localStorage.removeItem("elemShops");
+    		localStorage.removeItem("meituanShops");
+    		localStorage.removeItem("baiduShops");
+    		localStorage.removeItem("shopIds");
+    		localStorage.removeItem("username");
+    		localStorage.removeItem("password");
+    },
+    //pc登出
+    logoing: function(self){
+    	$(".dropdown-menu a").on('click', function(){
+    		self.logoout();
+    		window.location.href="login.html"
+    	});
     },
     slideTag: function(self){
         self.$el.find('li').on('click',function(){
@@ -34,8 +50,11 @@
                 localStorage.setItem("cmenu", $(this).index());
             }
             var href = $(this).children("a").data("href");
-            if(href){
+            if(href=="login"){
+            		self.logoout();
                 window.location.href = href;
+            } else if(href) {
+            		window.location.href = href;
             }
             return false;
         });
