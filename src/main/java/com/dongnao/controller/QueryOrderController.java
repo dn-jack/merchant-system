@@ -115,7 +115,7 @@ public class QueryOrderController {
                             300000);
                     log.info(countRe);
                     JSONObject count = JSON.parseObject(countRe);
-                    if (count.containsKey("result")) {
+                    if (count.get("result") != null) {
                         queryJo.getJSONObject("params")
                                 .getJSONObject("condition")
                                 .put("limit", count.getInteger("result"));
@@ -142,7 +142,15 @@ public class QueryOrderController {
                         
                         for (Object o : reJa) {
                             JSONObject eachJo = (JSONObject)o;
-                            retresult.add(elmFixData(eachJo));
+                            try {
+                                retresult.add(elmFixData(eachJo,
+                                        username,
+                                        password,
+                                        shopId));
+                            }
+                            catch (Exception e) {
+                                continue;
+                            }
                         }
                     }
                 }
@@ -195,6 +203,13 @@ public class QueryOrderController {
             return retJo.toString();
         }
         catch (Exception e) {
+            dn_errorOrder(username,
+                    password,
+                    "",
+                    "elm",
+                    null,
+                    null,
+                    e.getMessage());
             e.printStackTrace();
             JSONObject retJo = new JSONObject();
             retJo.put("respCode", "9999");
@@ -217,7 +232,7 @@ public class QueryOrderController {
         mt.insert(cookieBo, "dn_cookies");
     }
     
-    private void insertToDn_ksid(String username, String ksid) {
+    private void insertToDn_ksid(String username, String ksid) throws Exception {
         MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
                 .getBean("mongoTemplate");
         
@@ -233,7 +248,7 @@ public class QueryOrderController {
         mt.insert(relJo.toString(), "dn_ksid");
     }
     
-    private String getKsid(String username) {
+    private String getKsid(String username) throws Exception {
         MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
                 .getBean("mongoTemplate");
         
@@ -251,7 +266,7 @@ public class QueryOrderController {
         return ksid;
     }
     
-    private String getMtCookies(String username) {
+    private String getMtCookies(String username) throws Exception {
         MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
                 .getBean("mongoTemplate");
         
@@ -269,145 +284,186 @@ public class QueryOrderController {
         return cookies;
     }
     
-    private JSONObject elmFixData(JSONObject jo) {
-        
+    private JSONObject elmFixData(JSONObject jo, String username,
+            String password, String shopId) throws Exception {
         JSONObject fixJo = new JSONObject();
-        
-        fixJo.put("orderTime",
-                JsonUtil.getString(jo, "activeTime").replace("T", " "));
-        fixJo.put("orderNo", JsonUtil.getString(jo, "id"));
-        fixJo.put("userName", JsonUtil.getString(jo, "consigneeName"));
-        //        fixJo.put("sex", JsonUtil.getString(fixJo, "consigneeName"));
-        fixJo.put("phone", jo.getJSONArray("consigneePhones").get(0));
-        fixJo.put("merchantId", JsonUtil.getString(jo, "shopId"));
-        fixJo.put("platformCount", JsonUtil.getString(jo, "daySn"));
-        String status = JsonUtil.getString(jo, "status");
-        
-        if ("INVALID".equals(status)) {
-            fixJo.put("is_invalid", "1");
-        }
-        else {
-            fixJo.put("is_invalid", "0");
-        }
-        
-        JSONArray groupsJa = jo.getJSONArray("groups");
-        JSONArray dishesJa = new JSONArray();
-        for (Object o : groupsJa) {
-            JSONObject groupsJo = (JSONObject)o;
-            if ("NORMAL".equals(groupsJo.getString("type"))) {
-                JSONArray itemsJa = groupsJo.getJSONArray("items");
-                
-                for (Object itemO : itemsJa) {
-                    JSONObject itemJo = (JSONObject)itemO;
-                    JSONObject dishesJo = new JSONObject();
-                    dishesJo.put("dishName", JsonUtil.getString(itemJo, "name"));
-                    dishesJo.put("activityName", "特价");
-                    dishesJo.put("count",
-                            JsonUtil.getString(itemJo, "quantity"));
-                    dishesJo.put("price1", JsonUtil.getString(itemJo, "price"));
-                    dishesJo.put("price2", JsonUtil.getString(itemJo, "total"));
-                    dishesJo.put("goods_id", JsonUtil.getString(itemJo, "id"));
-                    dishesJo.put("goods_price",
-                            JsonUtil.getString(itemJo, "price"));
-                    dishesJa.add(dishesJo);
-                }
+        try {
+            fixJo.put("orderTime", JsonUtil.getString(jo, "activeTime")
+                    .replace("T", " "));
+            fixJo.put("orderNo", JsonUtil.getString(jo, "id"));
+            fixJo.put("userName", JsonUtil.getString(jo, "consigneeName"));
+            //        fixJo.put("sex", JsonUtil.getString(fixJo, "consigneeName"));
+            fixJo.put("phone", jo.getJSONArray("consigneePhones").get(0));
+            fixJo.put("merchantId", JsonUtil.getString(jo, "shopId"));
+            fixJo.put("platformCount", JsonUtil.getString(jo, "daySn"));
+            String status = JsonUtil.getString(jo, "status");
+            
+            if ("INVALID".equals(status)) {
+                fixJo.put("is_invalid", "1");
             }
-            else if ("EXTRA".equals(groupsJo.getString("type"))) {
-                JSONArray itemsJa = groupsJo.getJSONArray("items");
-                
-                for (Object itemO : itemsJa) {
-                    JSONObject itemJo = (JSONObject)itemO;
-                    if ("102".equals(itemJo.getString("categoryId"))
-                            || "餐盒".equals(itemJo.getString("name"))) {
-                        fixJo.put("boxPrice",
+            else {
+                fixJo.put("is_invalid", "0");
+            }
+            
+            JSONArray groupsJa = jo.getJSONArray("groups");
+            JSONArray dishesJa = new JSONArray();
+            for (Object o : groupsJa) {
+                JSONObject groupsJo = (JSONObject)o;
+                if ("NORMAL".equals(groupsJo.getString("type"))) {
+                    JSONArray itemsJa = groupsJo.getJSONArray("items");
+                    
+                    for (Object itemO : itemsJa) {
+                        JSONObject itemJo = (JSONObject)itemO;
+                        JSONObject dishesJo = new JSONObject();
+                        dishesJo.put("dishName",
+                                JsonUtil.getString(itemJo, "name"));
+                        dishesJo.put("activityName", "特价");
+                        dishesJo.put("count",
+                                JsonUtil.getString(itemJo, "quantity"));
+                        dishesJo.put("price1",
                                 JsonUtil.getString(itemJo, "price"));
+                        dishesJo.put("price2",
+                                JsonUtil.getString(itemJo, "total"));
+                        dishesJo.put("goods_id",
+                                JsonUtil.getString(itemJo, "id"));
+                        dishesJo.put("goods_price",
+                                JsonUtil.getString(itemJo, "price"));
+                        dishesJa.add(dishesJo);
+                    }
+                }
+                else if ("EXTRA".equals(groupsJo.getString("type"))) {
+                    JSONArray itemsJa = groupsJo.getJSONArray("items");
+                    
+                    for (Object itemO : itemsJa) {
+                        JSONObject itemJo = (JSONObject)itemO;
+                        if ("102".equals(itemJo.getString("categoryId"))
+                                || "餐盒".equals(itemJo.getString("name"))) {
+                            fixJo.put("boxPrice",
+                                    JsonUtil.getString(itemJo, "price"));
+                        }
                     }
                 }
             }
-        }
-        
-        fixJo.put("dishes", dishesJa);
-        fixJo.put("distributionPrice", "");
-        fixJo.put("discount", "");
-        fixJo.put("hongbao", JsonUtil.getString(jo, "hongbao"));
-        fixJo.put("orderPrice",
-                JsonUtil.getString(jo, "goodsTotalWithoutPackage"));
-        fixJo.put("state", "0");
-        fixJo.put("merchantName", JsonUtil.getString(jo, "shopName"));
-        String orderType = JsonUtil.getString(jo, "orderType");
-        if ("BOOKING_UNPROCESSED".equals(orderType)) {
-            orderType = "BOOKING";
-        }
-        fixJo.put("orderType", orderType);
-        fixJo.put("merchantActivityPart",
-                JsonUtil.getString(jo, "merchantActivityPart"));
-        fixJo.put("elemeActivityPart",
-                JsonUtil.getString(jo, "elemeActivityPart"));
-        fixJo.put("serviceFee", JsonUtil.getString(jo, "serviceFee"));
-        fixJo.put("serviceRate", JsonUtil.getString(jo, "serviceRate"));
-        
-        //        fixJo.put("platform_dist_charge",
-        //                JsonUtil.getString(jo, "deliveryFeeTotal"));
-        fixJo.put("settlement_amount", JsonUtil.getString(jo, "income"));
-        fixJo.put("distribution_mode",
-                JsonUtil.getString(jo, "deliveryServiceType"));
-        fixJo.put("remark", JsonUtil.getString(jo, "remark"));
-        fixJo.put("platform_type", "elm");
-        fixJo.put("booked_time", JsonUtil.getString(jo, "bookedTime"));
-        fixJo.put("consignee_name", JsonUtil.getString(jo, "consigneeName"));
-        fixJo.put("active_time", JsonUtil.getString(jo, "activeTime"));
-        fixJo.put("active_total", JsonUtil.getString(jo, "activityTotal"));
-        fixJo.put("orderLatestStatus",
-                JsonUtil.getString(jo, "orderLatestStatus"));
-        fixJo.put("consigneeAddress",
-                JsonUtil.getString(jo, "consigneeAddress"));
-        fixJo.put("distance", JsonUtil.getString(jo, "distance"));
-        
-        //20170508新增
-        double amount = 0.0;
-        if (JsonUtil.isNotBlank(jo.get("merchantActivities"))) {
-            JSONArray merchantActivities = jo.getJSONArray("merchantActivities");
-            for (Object o : merchantActivities) {
-                JSONObject merchantActivitieJo = (JSONObject)o;
-                if ("商家代金券抵扣".equals(merchantActivitieJo.getString("name")
-                        .trim())) {
-                    amount += merchantActivitieJo.getDouble("amount");
-                }
-                //                else if ("红包抵扣".equals(merchantActivitieJo.getString("name")
-                //                        .trim())) {
-                //                    amount += merchantActivitieJo.getDouble("amount");
-                //                }
+            
+            fixJo.put("dishes", dishesJa);
+            fixJo.put("distributionPrice", "");
+            fixJo.put("discount", "");
+            fixJo.put("hongbao", JsonUtil.getString(jo, "hongbao"));
+            fixJo.put("orderPrice",
+                    JsonUtil.getString(jo, "goodsTotalWithoutPackage"));
+            fixJo.put("state", "0");
+            fixJo.put("merchantName", JsonUtil.getString(jo, "shopName"));
+            String orderType = JsonUtil.getString(jo, "orderType");
+            if ("BOOKING_UNPROCESSED".equals(orderType)) {
+                orderType = "BOOKING";
             }
-            fixJo.put("merchant_subsidy_vouchers", amount);
+            fixJo.put("orderType", orderType);
+            fixJo.put("merchantActivityPart",
+                    JsonUtil.getString(jo, "merchantActivityPart"));
+            fixJo.put("elemeActivityPart",
+                    JsonUtil.getString(jo, "elemeActivityPart"));
+            fixJo.put("serviceFee", JsonUtil.getString(jo, "serviceFee"));
+            fixJo.put("serviceRate", JsonUtil.getString(jo, "serviceRate"));
+            
+            //        fixJo.put("platform_dist_charge",
+            //                JsonUtil.getString(jo, "deliveryFeeTotal"));
+            fixJo.put("settlement_amount", JsonUtil.getString(jo, "income"));
+            fixJo.put("distribution_mode",
+                    JsonUtil.getString(jo, "deliveryServiceType"));
+            fixJo.put("remark", JsonUtil.getString(jo, "remark"));
+            fixJo.put("platform_type", "elm");
+            fixJo.put("booked_time", JsonUtil.getString(jo, "bookedTime"));
+            fixJo.put("consignee_name", JsonUtil.getString(jo, "consigneeName"));
+            fixJo.put("active_time", JsonUtil.getString(jo, "activeTime"));
+            fixJo.put("active_total", JsonUtil.getString(jo, "activityTotal"));
+            fixJo.put("orderLatestStatus",
+                    JsonUtil.getString(jo, "orderLatestStatus"));
+            fixJo.put("consigneeAddress",
+                    JsonUtil.getString(jo, "consigneeAddress"));
+            fixJo.put("distance", JsonUtil.getString(jo, "distance"));
+            
+            //20170508新增
+            double amount = 0.0;
+            if (JsonUtil.isNotBlank(jo.get("merchantActivities"))) {
+                JSONArray merchantActivities = jo.getJSONArray("merchantActivities");
+                for (Object o : merchantActivities) {
+                    JSONObject merchantActivitieJo = (JSONObject)o;
+                    if ("商家代金券抵扣".equals(merchantActivitieJo.getString("name")
+                            .trim())) {
+                        amount += merchantActivitieJo.getDouble("amount");
+                    }
+                    //                else if ("红包抵扣".equals(merchantActivitieJo.getString("name")
+                    //                        .trim())) {
+                    //                    amount += merchantActivitieJo.getDouble("amount");
+                    //                }
+                }
+                fixJo.put("merchant_subsidy_vouchers", amount);
+            }
+            fixJo.put("merchant_activities_subsidies",
+                    jo.getDouble("restaurantPart") - amount);
+            String deliveryServiceType = JsonUtil.getString(jo,
+                    "deliveryServiceType");
+            if ("CROWD".equals(deliveryServiceType)) {
+                fixJo.put("merchant_dist_charge",
+                        JsonUtil.getString(jo, "deliveryFeeTotal"));
+            }
+            else {
+                fixJo.put("merchant_dist_charge", "0");
+            }
+            
+            if ("CONTROLLED".equals(deliveryServiceType)) {
+                fixJo.put("platform_dist_charge",
+                        JsonUtil.getString(jo, "deliveryFeeTotal"));
+                fixJo.put("order_dist_charge ",
+                        JsonUtil.getString(jo, "deliveryFeeTotal"));
+            }
+            else {
+                fixJo.put("platform_dist_charge", "0");
+                fixJo.put("order_dist_charge ", "0");
+            }
+            fixJo.put("distribution_mode",
+                    JsonUtil.getString(jo, "deliveryServiceType"));
+            fixJo.put("platform_activities_subsidies",
+                    JsonUtil.getString(jo, "elemeActivityPart"));
         }
-        fixJo.put("merchant_activities_subsidies",
-                jo.getDouble("restaurantPart") - amount);
-        String deliveryServiceType = JsonUtil.getString(jo,
-                "deliveryServiceType");
-        if ("CROWD".equals(deliveryServiceType)) {
-            fixJo.put("merchant_dist_charge",
-                    JsonUtil.getString(jo, "deliveryFeeTotal"));
+        catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            dn_errorOrder(username,
+                    password,
+                    shopId,
+                    "elm",
+                    jo,
+                    null,
+                    e.getMessage());
+            throw e;
         }
-        else {
-            fixJo.put("merchant_dist_charge", "0");
-        }
-        
-        if ("CONTROLLED".equals(deliveryServiceType)) {
-            fixJo.put("platform_dist_charge",
-                    JsonUtil.getString(jo, "deliveryFeeTotal"));
-            fixJo.put("order_dist_charge ",
-                    JsonUtil.getString(jo, "deliveryFeeTotal"));
-        }
-        else {
-            fixJo.put("platform_dist_charge", "0");
-            fixJo.put("order_dist_charge ", "0");
-        }
-        fixJo.put("distribution_mode",
-                JsonUtil.getString(jo, "deliveryServiceType"));
-        fixJo.put("platform_activities_subsidies",
-                JsonUtil.getString(jo, "elemeActivityPart"));
         //20170508新增
         return fixJo;
+    }
+    
+    private void dn_errorOrder(String username, String password, String shopId,
+            String platform, JSONObject jo, JSONObject chargeJo, String msg) {
+        MongoTemplate mt = (MongoTemplate)SpringContextHolder.getWebApplicationContext()
+                .getBean("mongoTemplate");
+        
+        BasicDBObject relJo = new BasicDBObject();
+        relJo.put("username", username);
+        relJo.put("password", password);
+        relJo.put("shopId", shopId);
+        relJo.put("platformType", platform);
+        relJo.put("json", jo);
+        relJo.put("charge", chargeJo);
+        relJo.put("msg", msg);
+        relJo.put("channel", "queryOrder");
+        
+        BasicDBObject shopIds = new BasicDBObject();
+        shopIds.put("username", username);
+        shopIds.put("password", password);
+        DBCollection dbc = mt.getCollection("dn_errorOrder");
+        dbc.remove(shopIds);
+        mt.remove(shopIds, "dn_errorOrder");
+        mt.insert(relJo, "dn_errorOrder");
     }
     
     @RequestMapping("/mtQueryOrder")
@@ -437,6 +493,19 @@ public class QueryOrderController {
                         step3(step2Ret, username);
                     }
                 }
+            }
+            
+            if (JsonUtil.isBlank(getMtCookies(username))) {
+                dn_errorOrder(username,
+                        password,
+                        "",
+                        "mt",
+                        null,
+                        null,
+                        "用户名密码错误，登录失败！");
+                retJo.put("respCode", "9999");
+                retJo.put("respDesc", "登录失败！");
+                return retJo.toString();
             }
             
             String getStr = "?time=" + System.currentTimeMillis()
@@ -469,9 +538,16 @@ public class QueryOrderController {
                     String chargeRet = chargeInfo.get("result");
                     JSONObject chargeJo = JSON.parseObject(chargeRet);
                     if (JsonUtil.isNotBlank(chargeJo.get("data"))) {
-                        retresult.add(mtfixData(eachData,
-                                chargeJo.getJSONArray("data").getJSONObject(0),
-                                username));
+                        try {
+                            retresult.add(mtfixData(eachData,
+                                    chargeJo.getJSONArray("data")
+                                            .getJSONObject(0),
+                                    username,
+                                    password));
+                        }
+                        catch (Exception e) {
+                            continue;
+                        }
                     }
                 }
             }
@@ -569,145 +645,182 @@ public class QueryOrderController {
     }
     
     private JSONObject mtfixData(JSONObject jo, JSONObject chargeJo,
-            String userName) {
+            String userName, String password) {
         JSONObject fixJo = new JSONObject();
-        fixJo.put("orderTime", JsonUtil.getString(jo, "order_time_fmt"));
-        fixJo.put("orderNo", JsonUtil.getString(jo, "wm_order_id_view_str"));
-        fixJo.put("userName", JsonUtil.getString(jo, "recipient_name"));
-        fixJo.put("phone", JsonUtil.getString(jo, "recipient_phone"));
-        fixJo.put("merchantId", userName);
-        fixJo.put("platformCount", JsonUtil.getString(jo, "num"));
-        
-        String status = JsonUtil.getString(jo, "status");
-        if ("9".equals(status)) {
-            fixJo.put("is_invalid", "1");
-        }
-        else {
-            fixJo.put("is_invalid", "0");
-        }
-        
-        if (JsonUtil.isNotBlank(jo.get("cartDetailVos"))) {
-            JSONArray dishesJa = new JSONArray();
-            for (Object o : jo.getJSONArray("cartDetailVos")) {
-                JSONObject cartDetailVosJo = (JSONObject)o;
-                if (JsonUtil.isNotBlank(cartDetailVosJo.get("details"))) {
-                    JSONArray detailsJa = cartDetailVosJo.getJSONArray("details");
-                    for (Object detailso : detailsJa) {
-                        JSONObject detailJo = (JSONObject)detailso;
-                        JSONObject dishJo = new JSONObject();
-                        dishJo.put("dishName",
-                                JsonUtil.getString(detailJo, "food_name"));
-                        //                        dishJo.put("activityName", "特价");
-                        dishJo.put("count",
-                                JsonUtil.getString(detailJo, "count"));
-                        dishJo.put("price1", JsonUtil.getString(detailJo,
-                                "origin_food_price"));
-                        dishJo.put("price2",
-                                JsonUtil.getString(detailJo, "food_price"));
-                        dishJo.put("goods_id",
-                                JsonUtil.getString(detailJo, "wm_food_id"));
-                        dishJo.put("goods_price", JsonUtil.getString(detailJo,
-                                "origin_food_price"));
-                        dishesJa.add(dishJo);
+        try {
+            log.info("------------------------orderJo--------------------" + jo);
+            
+            fixJo.put("orderTime", JsonUtil.getString(jo, "order_time_fmt"));
+            fixJo.put("orderNo", JsonUtil.getString(jo, "wm_order_id_view_str"));
+            fixJo.put("userName", JsonUtil.getString(jo, "recipient_name"));
+            fixJo.put("phone", JsonUtil.getString(jo, "recipient_phone"));
+            fixJo.put("merchantId", userName);
+            fixJo.put("platformCount", JsonUtil.getString(jo, "num"));
+            
+            String status = JsonUtil.getString(jo, "status");
+            if ("9".equals(status)) {
+                fixJo.put("is_invalid", "1");
+            }
+            else {
+                fixJo.put("is_invalid", "0");
+            }
+            
+            double prices = 0.0;
+            
+            if (JsonUtil.isNotBlank(jo.get("cartDetailVos"))) {
+                JSONArray dishesJa = new JSONArray();
+                for (Object o : jo.getJSONArray("cartDetailVos")) {
+                    JSONObject cartDetailVosJo = (JSONObject)o;
+                    if (JsonUtil.isNotBlank(cartDetailVosJo.get("details"))) {
+                        JSONArray detailsJa = cartDetailVosJo.getJSONArray("details");
+                        for (Object detailso : detailsJa) {
+                            JSONObject detailJo = (JSONObject)detailso;
+                            JSONObject dishJo = new JSONObject();
+                            dishJo.put("dishName",
+                                    JsonUtil.getString(detailJo, "food_name"));
+                            //                        dishJo.put("activityName", "特价");
+                            dishJo.put("count",
+                                    JsonUtil.getString(detailJo, "count"));
+                            dishJo.put("price1", JsonUtil.getString(detailJo,
+                                    "origin_food_price"));
+                            dishJo.put("price2",
+                                    JsonUtil.getString(detailJo, "food_price"));
+                            dishJo.put("goods_id",
+                                    JsonUtil.getString(detailJo, "wm_food_id"));
+                            dishJo.put("goods_price",
+                                    JsonUtil.getString(detailJo,
+                                            "origin_food_price"));
+                            if (JsonUtil.isNotBlank(detailJo.get("origin_food_price"))) {
+                                prices += detailJo.getDouble("origin_food_price");
+                            }
+                            dishesJa.add(dishJo);
+                        }
+                    }
+                }
+                fixJo.put("dishes", dishesJa);
+            }
+            
+            if (chargeJo.containsKey("giftDetails")
+                    && JsonUtil.isNotBlank(chargeJo.get("giftDetails"))) {
+                JSONArray gifts = chargeJo.getJSONArray("giftDetails");
+                for (Object gift : gifts) {
+                    JSONObject giftJo = (JSONObject)gift;
+                    if (JsonUtil.isNotBlank(giftJo.get("giftAmount"))) {
+                        prices += giftJo.getDouble("giftAmount");
                     }
                 }
             }
-            fixJo.put("dishes", dishesJa);
-        }
-        fixJo.put("boxPrice", JsonUtil.getString(jo, "boxPriceTotal"));
-        fixJo.put("orderPrice",
-                chargeJo.getInteger("foodAmount")
-                        - jo.getInteger("boxPriceTotal"));
-        fixJo.put("state", "0");
-        fixJo.put("merchantName", JsonUtil.getString(jo, "poi_name"));
-        fixJo.put("platform_type", "mt");
-        fixJo.put("consignee_name", JsonUtil.getString(jo, "recipient_name"));
-        fixJo.put("consigneeAddress",
-                JsonUtil.getString(jo, "recipient_address"));
-        fixJo.put("distance", JsonUtil.getString(jo, "distance"));
-        fixJo.put("remark", JsonUtil.getString(jo, "remark"));
-        
-        //        boolean riderPay = JsonUtil.getBoolean(chargeJo, "riderPay");
-        //        if (riderPay) {
-        //            fixJo.put("platform_dist_charge",
-        //                    JsonUtil.getString(chargeJo, "shippingAmount"));
-        //            fixJo.put("distribution_mode", "CROWD");
-        //        }
-        //        else {
-        //            fixJo.put("merchant_dist_charge",
-        //                    JsonUtil.getString(jo, "shipping_fee"));
-        //            fixJo.put("distribution_mode", "NONE");
-        //        }
-        //        if (JsonUtil.isNotBlank(chargeJo.get("commisionDetails"))) {
-        //            fixJo.put("serviceFee",
-        //                    JsonUtil.getString(chargeJo.getJSONArray("commisionDetails")
-        //                            .getJSONObject(0),
-        //                            "chargeAmount"));
-        //        }
-        //        String status = JsonUtil.getString(jo, "status");
-        if ("2".equals(status)) {
-            fixJo.put("orderLatestStatus", "等待接单");
-        }
-        else if ("4".equals(status)) {
-            fixJo.put("orderLatestStatus", "等待配送");
-        }
-        else if ("8".equals(status)) {
-            fixJo.put("orderLatestStatus", "用户已确认收餐");
-        }
-        else if ("9".equals(status)) {
-            fixJo.put("orderLatestStatus", "订单取消");
-        }
-        else {
-            fixJo.put("orderLatestStatus", "等待配送");
-        }
-        fixJo.put("activities_subsidy_bymerchant", jo.getDouble("total_before")
-                - jo.getDouble("total_after"));
-        
-        //20170508新增
-        fixJo.put("orderType", JsonUtil.getString(jo, "orderCopyContent")
-                .contains("预订单") ? "BOOKING" : "NORMAL");
-        fixJo.put("merchant_activities_subsidies",
-                JsonUtil.getString(chargeJo, "activityAmount"));
-        String shippingType = JsonUtil.getString(chargeJo, "shippingType");
-        if ("0000".equals(shippingType)) {
-            fixJo.put("merchant_dist_charge",
-                    JsonUtil.getString(chargeJo, "shippingAmount"));
-        }
-        else {
-            fixJo.put("merchant_dist_charge", "0");
-        }
-        
-        if ("1001".equals(shippingType)) {
-            fixJo.put("platform_dist_charge",
-                    JsonUtil.getString(chargeJo, "shippingAmount"));
-            fixJo.put("order_dist_charge ",
-                    JsonUtil.getString(chargeJo, "shippingAmount"));
-        }
-        else {
-            fixJo.put("platform_dist_charge", "0");
-            fixJo.put("order_dist_charge ", "0");
-        }
-        fixJo.put("serviceFee", JsonUtil.getString(chargeJo, "commisionAmount"));
-        fixJo.put("settlement_amount",
-                JsonUtil.getString(chargeJo, "settleAmount"));
-        fixJo.put("distribution_mode",
-                JsonUtil.getString(chargeJo, "shippingType"));
-        if (JsonUtil.isNotBlank(jo.get("discounts"))) {
-            double infocount = 0.0;
-            JSONArray discounts = jo.getJSONArray("discounts");
-            for (Object o : discounts) {
-                JSONObject discountJo = (JSONObject)o;
-                String info = JsonUtil.getString(discountJo, "info");
-                infocount += Double.valueOf(info.substring(info.indexOf("￥") + 1));
+            
+            fixJo.put("boxPrice", JsonUtil.getString(jo, "boxPriceTotal"));
+            fixJo.put("orderPrice", prices);
+            fixJo.put("state", "0");
+            fixJo.put("merchantName", JsonUtil.getString(jo, "poi_name"));
+            fixJo.put("platform_type", "mt");
+            fixJo.put("consignee_name",
+                    JsonUtil.getString(jo, "recipient_name"));
+            fixJo.put("consigneeAddress",
+                    JsonUtil.getString(jo, "recipient_address"));
+            fixJo.put("distance", JsonUtil.getString(jo, "distance"));
+            fixJo.put("remark", JsonUtil.getString(jo, "remark"));
+            
+            //        boolean riderPay = JsonUtil.getBoolean(chargeJo, "riderPay");
+            //        if (riderPay) {
+            //            fixJo.put("platform_dist_charge",
+            //                    JsonUtil.getString(chargeJo, "shippingAmount"));
+            //            fixJo.put("distribution_mode", "CROWD");
+            //        }
+            //        else {
+            //            fixJo.put("merchant_dist_charge",
+            //                    JsonUtil.getString(jo, "shipping_fee"));
+            //            fixJo.put("distribution_mode", "NONE");
+            //        }
+            //        if (JsonUtil.isNotBlank(chargeJo.get("commisionDetails"))) {
+            //            fixJo.put("serviceFee",
+            //                    JsonUtil.getString(chargeJo.getJSONArray("commisionDetails")
+            //                            .getJSONObject(0),
+            //                            "chargeAmount"));
+            //        }
+            //        String status = JsonUtil.getString(jo, "status");
+            if ("2".equals(status)) {
+                fixJo.put("orderLatestStatus", "等待接单");
             }
-            fixJo.put("platform_activities_subsidies",
-                    infocount - chargeJo.getDouble("activityAmount"));
+            else if ("4".equals(status)) {
+                fixJo.put("orderLatestStatus", "等待配送");
+            }
+            else if ("8".equals(status)) {
+                fixJo.put("orderLatestStatus", "用户已确认收餐");
+            }
+            else if ("9".equals(status)) {
+                fixJo.put("orderLatestStatus", "订单取消");
+            }
+            else {
+                fixJo.put("orderLatestStatus", "等待配送");
+            }
+            fixJo.put("activities_subsidy_bymerchant",
+                    jo.getDouble("total_before") - jo.getDouble("total_after"));
+            
+            //20170508新增
+            fixJo.put("orderType", JsonUtil.getString(jo, "orderCopyContent")
+                    .contains("预订单") ? "BOOKING" : "NORMAL");
+            fixJo.put("merchant_activities_subsidies",
+                    JsonUtil.getString(chargeJo, "activityAmount"));
+            String shippingType = JsonUtil.getString(chargeJo, "shippingType");
+            if ("0000".equals(shippingType)) {
+                fixJo.put("merchant_dist_charge",
+                        JsonUtil.getString(chargeJo, "shippingAmount"));
+            }
+            else {
+                fixJo.put("merchant_dist_charge", "0");
+            }
+            
+            if ("1001".equals(shippingType)) {
+                fixJo.put("platform_dist_charge",
+                        JsonUtil.getString(chargeJo, "shippingAmount"));
+                fixJo.put("order_dist_charge ",
+                        JsonUtil.getString(chargeJo, "shippingAmount"));
+            }
+            else {
+                fixJo.put("platform_dist_charge", "0");
+                fixJo.put("order_dist_charge ", "0");
+            }
+            fixJo.put("serviceFee",
+                    JsonUtil.getString(chargeJo, "commisionAmount"));
+            fixJo.put("settlement_amount",
+                    JsonUtil.getString(chargeJo, "settleAmount"));
+            fixJo.put("distribution_mode",
+                    JsonUtil.getString(chargeJo, "shippingType"));
+            if (JsonUtil.isNotBlank(jo.get("discounts"))) {
+                double infocount = 0.0;
+                JSONArray discounts = jo.getJSONArray("discounts");
+                for (Object o : discounts) {
+                    JSONObject discountJo = (JSONObject)o;
+                    String info = JsonUtil.getString(discountJo, "info");
+                    if (JsonUtil.isNotBlank(info)) {
+                        infocount += Double.valueOf(info.substring(info.indexOf("￥") + 1));
+                    }
+                }
+                fixJo.put("platform_activities_subsidies",
+                        infocount - chargeJo.getDouble("activityAmount"));
+            }
+            else {
+                fixJo.put("platform_activities_subsidies", 0);
+            }
         }
-        else {
-            fixJo.put("platform_activities_subsidies", 0);
+        catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            dn_errorOrder(userName,
+                    password,
+                    "",
+                    "mt",
+                    jo,
+                    chargeJo,
+                    e.getMessage());
+            throw e;
         }
         //20170508新增
         return fixJo;
+        
     }
     
     @RequestMapping("/bdwmQueryOrder")
@@ -756,7 +869,12 @@ public class QueryOrderController {
             }
             for (Object o : order_list) {
                 JSONObject order = (JSONObject)o;
-                retresult.add(bdwmfixData(order, username));
+                try {
+                    retresult.add(bdwmfixData(order, username, password));
+                }
+                catch (Exception e) {
+                    continue;
+                }
             }
             retJo.put("respCode", "0000");
             retJo.put("respDesc", "查询成功！");
@@ -790,43 +908,60 @@ public class QueryOrderController {
         return cookies;
     }
     
-    private JSONObject bdwmfixData(JSONObject jo, String userName) {
+    private JSONObject bdwmfixData(JSONObject jo, String userName,
+            String password) throws Exception {
         JSONObject fixJo = new JSONObject();
-        fixJo.put("merchantId", userName);
-        fixOrder_basic(fixJo, jo);
-        fixOrder_goods(fixJo, jo);
-        fixorder_meal_fee(fixJo, jo);
-        //        fixorder_total(fixJo, jo);
-        fixJo.put("state", "0");
-        
-        String status = JsonUtil.getString(jo.getJSONObject("order_basic"),
-                "status");
-        if ("10".equals(status)) {
-            fixJo.put("is_invalid", "1");
+        try {
+            fixJo.put("merchantId", userName);
+            fixOrder_basic(fixJo, jo);
+            fixOrder_goods(fixJo, jo);
+            fixorder_meal_fee(fixJo, jo);
+            //        fixorder_total(fixJo, jo);
+            fixJo.put("state", "0");
+            
+            String status = JsonUtil.getString(jo.getJSONObject("order_basic"),
+                    "status");
+            if ("10".equals(status)) {
+                fixJo.put("is_invalid", "1");
+            }
+            else {
+                fixJo.put("is_invalid", "0");
+            }
+            
+            fixJo.put("platform_type", "bdwm");
+            //        fixJo.put("merchantActivityPart", getmerchantPart(jo));
+            fixJo.put("serviceFee", getserviceFee(jo));
+            merchant_activities_subsidies(fixJo, jo);
+            merchant_dist_charge(fixJo, jo);
+            //        platform_dist_charge(fixJo, jo);
+            settlement_amount(fixJo, jo);
+            distribution_mode(fixJo, jo);
         }
-        else {
-            fixJo.put("is_invalid", "0");
+        catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            dn_errorOrder(userName,
+                    password,
+                    "",
+                    "bdwm",
+                    jo,
+                    null,
+                    e.getMessage());
+            throw e;
         }
-        
-        fixJo.put("platform_type", "bdwm");
-        //        fixJo.put("merchantActivityPart", getmerchantPart(jo));
-        fixJo.put("serviceFee", getserviceFee(jo));
-        merchant_activities_subsidies(fixJo, jo);
-        merchant_dist_charge(fixJo, jo);
-        //        platform_dist_charge(fixJo, jo);
-        settlement_amount(fixJo, jo);
-        distribution_mode(fixJo, jo);
         return fixJo;
     }
     
-    private void distribution_mode(JSONObject fixJo, JSONObject jo) {
+    private void distribution_mode(JSONObject fixJo, JSONObject jo)
+            throws Exception {
         String is_baidu_logistics = JsonUtil.getString(jo.getJSONObject("order_basic"),
                 "is_baidu_logistics");
         fixJo.put("distribution_mode",
                 "1".equals(is_baidu_logistics) ? "CONTROLLED" : "CROWD");
     }
     
-    private void settlement_amount(JSONObject fixJo, JSONObject jo) {
+    private void settlement_amount(JSONObject fixJo, JSONObject jo)
+            throws Exception {
         if (JsonUtil.isBlank(jo.get("order_total"))) {
             return;
         }
@@ -836,7 +971,8 @@ public class QueryOrderController {
                 JsonUtil.getString(order_total, "shop_price"));
     }
     
-    private void merchant_dist_charge(JSONObject fixJo, JSONObject jo) {
+    private void merchant_dist_charge(JSONObject fixJo, JSONObject jo)
+            throws Exception {
         if (JsonUtil.isBlank(jo.get("takeout_cost"))) {
             return;
         }
@@ -855,7 +991,8 @@ public class QueryOrderController {
         }
     }
     
-    private void merchant_activities_subsidies(JSONObject fixJo, JSONObject jo) {
+    private void merchant_activities_subsidies(JSONObject fixJo, JSONObject jo)
+            throws Exception {
         if (JsonUtil.isBlank(jo.get("order_goods"))) {
             return;
         }
@@ -888,7 +1025,7 @@ public class QueryOrderController {
         fixJo.put("merchant_activities_subsidies", shop_total_discount);
     }
     
-    private Double getserviceFee(JSONObject jo) {
+    private Double getserviceFee(JSONObject jo) throws Exception {
         JSONObject extract_commission = jo.getJSONObject("extract_commission");
         if (JsonUtil.isBlank(extract_commission)) {
             return 0.00;
@@ -899,7 +1036,7 @@ public class QueryOrderController {
         return extract_commission.getDouble("commission_total");
     }
     
-    private Double getmerchantPart(JSONObject jo) {
+    private Double getmerchantPart(JSONObject jo) throws Exception {
         JSONObject order_goods = jo.getJSONObject("order_goods");
         if (JsonUtil.isBlank(order_goods)) {
             return 0.00;
@@ -939,7 +1076,8 @@ public class QueryOrderController {
         return discount;
     }
     
-    private void fixorder_total(JSONObject fixJo, JSONObject order) {
+    private void fixorder_total(JSONObject fixJo, JSONObject order)
+            throws Exception {
         if (!order.containsKey("order_total")) {
             return;
         }
@@ -951,7 +1089,8 @@ public class QueryOrderController {
                         "customer_price"));
     }
     
-    private void fixorder_meal_fee(JSONObject fixJo, JSONObject order) {
+    private void fixorder_meal_fee(JSONObject fixJo, JSONObject order)
+            throws Exception {
         if (!order.containsKey("order_meal_fee")) {
             return;
         }
@@ -963,7 +1102,8 @@ public class QueryOrderController {
                         "price"));
     }
     
-    private void fixOrder_goods(JSONObject fixJo, JSONObject order) {
+    private void fixOrder_goods(JSONObject fixJo, JSONObject order)
+            throws Exception {
         JSONObject order_goods = order.getJSONObject("order_goods");
         if (JsonUtil.isBlank(order_goods)) {
             return;
@@ -991,7 +1131,8 @@ public class QueryOrderController {
         fixJo.put("dishes", dishesJa);
     }
     
-    private void fixOrder_basic(JSONObject fixJo, JSONObject order) {
+    private void fixOrder_basic(JSONObject fixJo, JSONObject order)
+            throws Exception {
         JSONObject order_basic = order.getJSONObject("order_basic");
         if (JsonUtil.isBlank(order_basic)) {
             return;

@@ -436,6 +436,8 @@ public class OrderController {
                         + "WMSTOKEN=" + WMSTOKEN;
                 retJo.put("respCode", "0000");
                 retJo.put("queryOrderCookie", queryOrderCookie);
+                retJo.put("respMsg", "登录成功！");
+                insertToMongo(username, queryOrderCookie);
                 return retJo.toString();
             }
             
@@ -472,44 +474,44 @@ public class OrderController {
         log.info("----------------获取到的参与者账号对应的外卖平台账号--------------------"
                 + retStr);
         
-        Map<String, String> baiduMap = new HashMap<String, String>();
-        JSONObject retJo = JSON.parseObject(retStr);
-        if ("0000".equals(retJo.getString("respCode"))) {
-            JSONArray resultJa = retJo.getJSONArray("result");
-            for (Object o : resultJa) {
-                JSONObject eachJo = (JSONObject)o;
-                if (eachJo.containsKey("baiduId")
-                        && JsonUtil.isNotBlank(eachJo.get("baiduId"))) {
-                    baiduMap.put(eachJo.getString("baiduId"),
-                            eachJo.getString("baidupwd"));
-                }
-            }
-            
-            if (baiduMap.entrySet().size() > 0) {
-                
-                String code = paramJo.getString("code");
-                String uuid = paramJo.getString("uuid");
-                for (Map.Entry<String, String> entry : baiduMap.entrySet()) {
-                    JSONObject entryJo = new JSONObject();
-                    entryJo.put("username", entry.getKey());
-                    entryJo.put("password", entry.getValue());
-                    entryJo.put("code", code);
-                    entryJo.put("uuid", uuid);
-                    String loginInfo = bdlogin(request, entryJo.toString());
-                    JSONObject loginJo = JSON.parseObject(loginInfo);
-                    if ("0000".equals(loginJo.getString("respCode"))) {
-                        insertToMongo(entry.getKey(),
-                                loginJo.getString("queryOrderCookie"));
-                    }
-                    else {
-                        resultJo.put("respCode", "9999");
-                        resultJo.put("respMsg", loginJo.getString("respMsg"));
-                        return resultJo.toString();
-                    }
-                }
-            }
-            
-        }
+        //        Map<String, String> baiduMap = new HashMap<String, String>();
+        //        JSONObject retJo = JSON.parseObject(retStr);
+        //        if ("0000".equals(retJo.getString("respCode"))) {
+        //            JSONArray resultJa = retJo.getJSONArray("result");
+        //            for (Object o : resultJa) {
+        //                JSONObject eachJo = (JSONObject)o;
+        //                if (eachJo.containsKey("baiduId")
+        //                        && JsonUtil.isNotBlank(eachJo.get("baiduId"))) {
+        //                    baiduMap.put(eachJo.getString("baiduId"),
+        //                            eachJo.getString("baidupwd"));
+        //                }
+        //            }
+        //            
+        //            if (baiduMap.entrySet().size() > 0) {
+        //                
+        //                String code = paramJo.getString("code");
+        //                String uuid = paramJo.getString("uuid");
+        //                for (Map.Entry<String, String> entry : baiduMap.entrySet()) {
+        //                    JSONObject entryJo = new JSONObject();
+        //                    entryJo.put("username", entry.getKey());
+        //                    entryJo.put("password", entry.getValue());
+        //                    entryJo.put("code", code);
+        //                    entryJo.put("uuid", uuid);
+        //                    String loginInfo = bdlogin(request, entryJo.toString());
+        //                    JSONObject loginJo = JSON.parseObject(loginInfo);
+        //                    if ("0000".equals(loginJo.getString("respCode"))) {
+        //                        insertToMongo(entry.getKey(),
+        //                                loginJo.getString("queryOrderCookie"));
+        //                    }
+        //                    else {
+        //                        resultJo.put("respCode", "9999");
+        //                        resultJo.put("respMsg", loginJo.getString("respMsg"));
+        //                        return resultJo.toString();
+        //                    }
+        //                }
+        //            }
+        //            
+        //        }
         
         return retStr;
     }
